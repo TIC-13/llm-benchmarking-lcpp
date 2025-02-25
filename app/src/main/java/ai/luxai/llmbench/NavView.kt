@@ -1,6 +1,8 @@
 package ai.luxai.llmbench
 
+import ai.luxai.llmbench.screens.AboutScreen
 import ai.luxai.llmbench.screens.HomeScreen
+import ai.luxai.llmbench.screens.LicensesScreen
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
@@ -17,6 +19,18 @@ fun NavView() {
 
         composable("home") {
             HomeScreen(
+                navController
+            )
+        }
+
+        composable("about") {
+            AboutScreen(
+                navController
+            )
+        }
+
+        composable("licenses") {
+            LicensesScreen(
                 navController
             )
         }

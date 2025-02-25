@@ -83,6 +83,8 @@ fun HomeScreen(
 
                 Spacer(modifier = Modifier.height(30.dp))
 
+                Spacer(modifier = Modifier.height(30.dp))
+
                 Column(
                     modifier = Modifier,
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -132,7 +134,7 @@ fun HomeScreen(
 
                     LargeRoundedButton(
                         icon = VectorIcon(Icons.Default.Info),
-                        onClick = { runWithDelayAfter { } },
+                        onClick = { runWithDelayAfter { navController.navigate("about") } },
                         text = "About app"
                     )
                 }
