@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Speed.AI LLM</string>
+    <string name="app_description">LLM Benchmarking</string>
+</resources>
