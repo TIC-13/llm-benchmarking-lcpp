@@ -1,5 +1,7 @@
 package ai.luxai.llmbench.screens.pickChat.components
 
+import ai.luxai.llmbench.state.ModelDownloadStatus
+import ai.luxai.llmbench.state.loadModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material.icons.outlined.Chat
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Download
@@ -29,25 +32,23 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-enum class ModelDownloadStatus {
-    DOWNLOADING, PAUSED, FINISHED, NO_DOWNLOAD_STARTED
-}
-
 @Composable
 fun PickModelView(
     name: String,
     status: ModelDownloadStatus,
-    onPause: () -> Unit,
+    onCancel: () -> Unit,
     onDownload: () -> Unit,
     onChat: () -> Unit,
     onDelete: () -> Unit,
@@ -87,7 +88,8 @@ fun PickModelView(
                     .height(20.dp)
                     .width(1.dp)
             )
-            if (status === ModelDownloadStatus.PAUSED) {
+
+            if (status === ModelDownloadStatus.NO_DOWNLOAD_STARTED) {
                 IconButton(
                     onClick = { onDownload() },
                     modifier = Modifier
@@ -100,20 +102,7 @@ fun PickModelView(
                         contentDescription = "start downloading",
                     )
                 }
-
-            } else if (status === ModelDownloadStatus.DOWNLOADING) {
-                IconButton(
-                    onClick = { onPause() }, modifier = Modifier
-                        .aspectRatio(1f)
-                        .weight(1f)
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Pause,
-                        tint = MaterialTheme.colorScheme.onPrimary,
-                        contentDescription = "pause downloading",
-                    )
-                }
-            } else if (status === ModelDownloadStatus.FINISHED) {
+            } else if (status === ModelDownloadStatus.DOWNLOADED) {
                 IconButton(
                     onClick = {
                         onChat()
@@ -141,7 +130,7 @@ fun PickModelView(
                     )
                 }
             }
-            if (status !== ModelDownloadStatus.NO_DOWNLOAD_STARTED) {
+            if (status == ModelDownloadStatus.DOWNLOADED) {
                 IconButton(
                     onClick = { deleteOptionsOpened = true },
                     modifier = Modifier
@@ -184,3 +173,4 @@ fun PickModelView(
         }
     }
 }
+
