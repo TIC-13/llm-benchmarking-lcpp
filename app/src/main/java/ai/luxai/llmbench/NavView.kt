@@ -3,6 +3,7 @@ package ai.luxai.llmbench
 import ai.luxai.llmbench.screens.AboutScreen
 import ai.luxai.llmbench.screens.HomeScreen
 import ai.luxai.llmbench.screens.LicensesScreen
+import ai.luxai.llmbench.screens.pickChatModel.PickChatScreen
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
@@ -31,6 +32,12 @@ fun NavView() {
 
         composable("licenses") {
             LicensesScreen(
+                navController
+            )
+        }
+
+        composable("pick-chat") {
+            PickChatScreen(
                 navController
             )
         }

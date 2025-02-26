@@ -53,7 +53,9 @@ fun HomeScreen(
     val runWithDelayAfter = useRunWithDelayAfter()
     val rankingAddress = useRankingAddress()
 
-    val (startConversation) = useStartConversation {}
+    val (startConversation) = useStartConversation {
+        navController.navigate("pick-chat")
+    }
 
     Column(
         modifier = Modifier
@@ -73,7 +75,6 @@ fun HomeScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        //.fillMaxHeight(0.3f)
                         .padding(30.dp, 0.dp),
                     horizontalAlignment = Alignment.Start,
                     verticalArrangement = Arrangement.Center
