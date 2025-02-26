@@ -1,5 +1,6 @@
-package ai.luxai.llmbench.screens
+package ai.luxai.llmbench.screens.licenses
 
+import ai.luxai.llmbench.components.AppBackground
 import ai.luxai.llmbench.components.AppTopBar
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -29,7 +30,7 @@ fun LicensesScreen(
             onBack = { navController.popBackStack() }
         )
     }) { paddingValues ->
-        HomeScreenBackground {
+        AppBackground {
             Column(
                 modifier = Modifier
                     .fillMaxWidth(1f)

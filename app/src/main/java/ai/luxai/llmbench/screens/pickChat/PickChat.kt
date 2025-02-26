@@ -1,9 +1,9 @@
-package ai.luxai.llmbench.screens.pickChatModel
+package ai.luxai.llmbench.screens.pickChat
 
+import ai.luxai.llmbench.components.AppBackground
 import ai.luxai.llmbench.components.AppTopBar
-import ai.luxai.llmbench.screens.HomeScreenBackground
-import ai.luxai.llmbench.screens.pickChatModel.components.ModelDownloadStatus
-import ai.luxai.llmbench.screens.pickChatModel.components.PickModelView
+import ai.luxai.llmbench.screens.pickChat.components.ModelDownloadStatus
+import ai.luxai.llmbench.screens.pickChat.components.PickModelView
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -41,7 +41,7 @@ fun PickChatScreen(
         }
     )
     { paddingValues ->
-        HomeScreenBackground {
+        AppBackground {
             Column(
                 modifier = Modifier
                     .fillMaxSize()

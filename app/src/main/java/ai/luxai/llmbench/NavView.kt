@@ -1,9 +1,9 @@
 package ai.luxai.llmbench
 
-import ai.luxai.llmbench.screens.AboutScreen
-import ai.luxai.llmbench.screens.HomeScreen
-import ai.luxai.llmbench.screens.LicensesScreen
-import ai.luxai.llmbench.screens.pickChatModel.PickChatScreen
+import ai.luxai.llmbench.screens.about.AboutScreen
+import ai.luxai.llmbench.screens.home.HomeScreen
+import ai.luxai.llmbench.screens.licenses.LicensesScreen
+import ai.luxai.llmbench.screens.pickChat.PickChatScreen
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost

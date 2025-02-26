@@ -1,4 +1,4 @@
-package ai.luxai.llmbench.screens.pickChatModel.components
+package ai.luxai.llmbench.screens.pickChat.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

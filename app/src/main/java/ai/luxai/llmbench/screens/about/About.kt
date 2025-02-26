@@ -1,8 +1,9 @@
-package ai.luxai.llmbench.screens
+package ai.luxai.llmbench.screens.about
 
 import ai.luxai.llmbench.components.AccordionItem
 import ai.luxai.llmbench.components.AccordionText
 import ai.luxai.llmbench.components.AccordionTitle
+import ai.luxai.llmbench.components.AppBackground
 import ai.luxai.llmbench.components.AppTopBar
 import ai.luxai.llmbench.components.PressableLink
 import ai.luxai.llmbench.utils.navigateToUrl
@@ -46,7 +47,7 @@ fun AboutScreen(
             onBack = { navController.popBackStack() }
         )
     }) { paddingValues ->
-        HomeScreenBackground {
+        AppBackground {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
