@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 
-const val licenseContent = "llama.cpp - MIT"
+const val licenseContent = "llama.cpp - MIT\nSmolChat - Apache 2.0"
 
 @Composable
 fun LicensesScreen(
