@@ -1,7 +1,7 @@
 package ai.luxai.llmbench.screens.pickChat.components
 
+import ai.luxai.llmbench.components.PressableLink
 import ai.luxai.llmbench.state.ModelDownloadStatus
-import ai.luxai.llmbench.state.loadModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,13 +16,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material.icons.outlined.Chat
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material.icons.outlined.HourglassTop
-import androidx.compose.material.icons.outlined.Pause
-import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -33,17 +30,20 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+
+data class Link(
+    val label: String,
+    val onPress: () -> Unit
+)
 
 @Composable
 fun PickModelView(
@@ -53,6 +53,7 @@ fun PickModelView(
     onChat: () -> Unit,
     onDelete: () -> Unit,
     downloadProgress: Float?,
+    link: Link? = null,
 ) {
 
     var deleteOptionsOpened by rememberSaveable { mutableStateOf(false) }
@@ -146,6 +147,13 @@ fun PickModelView(
                     )
                 }
             }
+        }
+        if(link !== null) {
+            PressableLink(
+                fontSize = 12.sp,
+                text = link.label,
+                onPress = { link.onPress() }
+            )
         }
         Spacer(modifier = Modifier.height(10.dp))
         LinearProgressIndicator(

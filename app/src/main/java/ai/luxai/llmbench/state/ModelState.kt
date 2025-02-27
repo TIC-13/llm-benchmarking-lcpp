@@ -21,15 +21,54 @@ enum class ModelDownloadStatus {
     DOWNLOADING, DOWNLOADED, NO_DOWNLOAD_STARTED, FAILED
 }
 
+fun huggingFaceModelFactory(
+    context: Context,
+    url: String
+): ModelState {
+
+    val getHuggingFaceFileName: () -> String = {
+        url.split("/").last()
+    }
+
+    val getHuggingFaceModelName: () -> String = {
+        getHuggingFaceFileName().split(".").dropLast(1).joinToString(".")
+    }
+
+    val getHuggingFaceRepoLink: () -> String = {
+        url.split("resolve")[0]
+    }
+
+    val getHuggingFaceRepoLabel: () -> String = {
+        url.split("co/")[1].split("/resolve")[0]
+    }
+
+    return ModelState(
+        context,
+        url,
+        fileName = getHuggingFaceFileName(),
+        modelName = getHuggingFaceModelName(),
+        repoLink = ModelLink(
+            label = getHuggingFaceRepoLabel(),
+            address = getHuggingFaceRepoLink()
+        )
+    )
+}
+
+data class ModelLink(
+    val label: String,
+    val address: String,
+)
+
 class ModelState(
     private val context: Context,
     private val url: String,
-    ){
+    val fileName: String,
+    val modelName: String,
+    val repoLink: ModelLink? = null
+){
 
     val status: MutableState<ModelDownloadStatus> = mutableStateOf(ModelDownloadStatus.NO_DOWNLOAD_STARTED)
     val progress: MutableState<Float> = mutableFloatStateOf(0F)
-    val filename = getFileName()
-    val modelName = getModelname()
 
     var file = getFileIfExists()
 
@@ -64,7 +103,7 @@ class ModelState(
                 if (!tempDir.exists()) tempDir.mkdirs()
                 if (!modelsDir.exists()) modelsDir.mkdirs()
 
-                val tempFile = File(tempDir, filename)
+                val tempFile = File(tempDir, fileName)
                 val response = client.newCall(request).execute()
                 val body = response.body ?: throw Exception("Response body is null")
 
@@ -97,7 +136,7 @@ class ModelState(
                 outputStream.close()
                 inputStream.close()
 
-                val permanentFile = File(modelsDir, filename)
+                val permanentFile = File(modelsDir, fileName)
                 val success = tempFile.renameTo(permanentFile)
 
                 withContext(Dispatchers.Main) {
@@ -142,20 +181,12 @@ class ModelState(
         progress.value = 1F
     }
 
-    private fun getFileName(): String{
-        return url.split("/").last()
-    }
-
-    private fun getModelname(): String{
-        return getFileName().split(".").dropLast(1).joinToString(".")
-    }
-
     private fun getFileIfExists(): File? {
-        return getFileFromFolder(getModelsDir(context), filename)
+        return getFileFromFolder(getModelsDir(context), fileName)
     }
 
     private fun getTempFile(): File? {
-        val tempFile = File(getTempModelsDir(context), filename)
+        val tempFile = File(getTempModelsDir(context), fileName)
         if(!tempFile.exists()) return null
         return tempFile
     }

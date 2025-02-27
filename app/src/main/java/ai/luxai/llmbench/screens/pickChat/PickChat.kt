@@ -4,10 +4,12 @@ import ai.luxai.llmbench.components.AppBackground
 import ai.luxai.llmbench.components.AppTopBar
 import ai.luxai.llmbench.hooks.ModalProps
 import ai.luxai.llmbench.hooks.useModal
+import ai.luxai.llmbench.screens.pickChat.components.Link
 import ai.luxai.llmbench.screens.pickChat.components.PickModelView
 import ai.luxai.llmbench.state.LLMViewModel
 import ai.luxai.llmbench.state.ModelDownloadStatus
 import ai.luxai.llmbench.state.loadModels
+import ai.luxai.llmbench.utils.navigateToUrl
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -37,7 +39,9 @@ fun PickChatScreen(
     viewModel: LLMViewModel,
 ) {
 
+    val context = LocalContext.current
     val localFocusManager = LocalFocusManager.current
+
     val modelsState by viewModel.modelsState.collectAsState()
 
     val modal = useModal()
@@ -85,6 +89,13 @@ fun PickChatScreen(
                             onDownload = { item.downloadFile(onDownloadFail = {
                                 modal.show(downloadFailedModalProps(item.modelName))
                             })},
+                            link =
+                                if(item.repoLink !== null)
+                                    Link(
+                                        item.repoLink.label,
+                                        onPress = { navigateToUrl(context, item.repoLink.address)}
+                                    )
+                                else null
                         )
                     }
                     item {
