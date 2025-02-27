@@ -89,6 +89,7 @@ fun PickChatScreen(
                             onDownload = { item.downloadFile(onDownloadFail = {
                                 modal.show(downloadFailedModalProps(item.modelName))
                             })},
+                            onCancel = { item.cancelDownload() },
                             link =
                                 if(item.repoLink !== null)
                                     Link(

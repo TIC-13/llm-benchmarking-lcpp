@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -65,27 +66,27 @@ class ModelState(
     val fileName: String,
     val modelName: String,
     val repoLink: ModelLink? = null
-){
-
+) {
     val status: MutableState<ModelDownloadStatus> = mutableStateOf(ModelDownloadStatus.NO_DOWNLOAD_STARTED)
-    val progress: MutableState<Float> = mutableFloatStateOf(0F)
-
+    val progress: MutableState<Float> = mutableFloatStateOf(0F) // mutableFloatStateOf also works
     var file = getFileIfExists()
 
+    private var downloadJob: Job? = null // Track the download coroutine
+
     init {
-        if(file !== null){
+        if (file != null) {
             status.value = ModelDownloadStatus.DOWNLOADED
             progress.value = 1F
-        }else {
+        } else {
             status.value = ModelDownloadStatus.NO_DOWNLOAD_STARTED
         }
     }
 
-    fun downloadFile(
-        onDownloadFail: (() -> Unit)? = null
-    ) {
-        if (status.value == ModelDownloadStatus.DOWNLOADING) throw Exception("The download is already going on")
-        if (status.value == ModelDownloadStatus.DOWNLOADED) throw Exception("The download has already been done")
+    fun downloadFile(onDownloadFail: (() -> Unit)? = null) {
+
+        if(status.value == ModelDownloadStatus.DOWNLOADED || status.value == ModelDownloadStatus.DOWNLOADING) {
+            return
+        }
 
         val client = OkHttpClient.Builder()
             .connectTimeout(30, TimeUnit.SECONDS)
@@ -96,7 +97,8 @@ class ModelState(
         val request = Request.Builder().url(url).build()
         status.value = ModelDownloadStatus.DOWNLOADING
 
-        CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
+        // Launch the download and store the Job
+        downloadJob = CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
             try {
                 val tempDir = getTempModelsDir(context)
                 val modelsDir = getModelsDir(context)
@@ -108,10 +110,9 @@ class ModelState(
                 val body = response.body ?: throw Exception("Response body is null")
 
                 val inputStream = body.byteStream()
-                // Use BufferedOutputStream for efficient file writing
                 val outputStream = BufferedOutputStream(FileOutputStream(tempFile), 8192)
 
-                val buffer = ByteArray(8192) // Increase buffer size to 8KB
+                val buffer = ByteArray(8192)
                 var bytesRead: Int
                 var totalBytes = 0L
                 val fileSize = body.contentLength()
@@ -121,7 +122,6 @@ class ModelState(
                     outputStream.write(buffer, 0, bytesRead)
                     totalBytes += bytesRead
 
-                    // Throttle UI updates to every 100ms or 1% progress
                     val currentTime = System.currentTimeMillis()
                     val progressValue = if (fileSize > 0) totalBytes.toFloat() / fileSize else 0F
                     if (currentTime - lastUpdateTime >= 100 || progressValue >= progress.value + 0.01F) {
@@ -144,23 +144,38 @@ class ModelState(
                         onSuccess()
                     } else {
                         onFail()
-                        if(onDownloadFail !== null)
-                            onDownloadFail()
+                        onDownloadFail?.invoke()
                     }
+                    downloadJob = null // Clear the job on completion
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     onFail()
-                    if(onDownloadFail !== null)
-                        onDownloadFail()
+                    onDownloadFail?.invoke()
+                    downloadJob = null // Clear the job on failure
                 }
             }
         }
     }
 
+    fun cancelDownload() {
+        if (status.value != ModelDownloadStatus.DOWNLOADING || downloadJob == null) {
+            return
+        }
+
+        downloadJob?.cancel()
+        downloadJob = null
+
+        CoroutineScope(Dispatchers.Main).launch {
+            status.value = ModelDownloadStatus.NO_DOWNLOAD_STARTED
+            progress.value = 0F
+            eraseModelFromTemp()
+        }
+    }
+
     fun delete(): Boolean {
         val deleteStatus = file?.delete()
-        if(deleteStatus == true) {
+        if (deleteStatus == true) {
             progress.value = 0F
             status.value = ModelDownloadStatus.NO_DOWNLOAD_STARTED
             file = null
@@ -187,7 +202,7 @@ class ModelState(
 
     private fun getTempFile(): File? {
         val tempFile = File(getTempModelsDir(context), fileName)
-        if(!tempFile.exists()) return null
+        if (!tempFile.exists()) return null
         return tempFile
     }
 

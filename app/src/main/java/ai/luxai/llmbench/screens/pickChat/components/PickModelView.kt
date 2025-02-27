@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material.icons.outlined.Chat
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Download
@@ -35,6 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -52,6 +54,7 @@ fun PickModelView(
     onDownload: () -> Unit,
     onChat: () -> Unit,
     onDelete: () -> Unit,
+    onCancel: () -> Unit,
     downloadProgress: Float?,
     link: Link? = null,
 ) {
@@ -89,15 +92,14 @@ fun PickModelView(
                     .height(20.dp)
                     .width(1.dp)
             )
-
             if (status === ModelDownloadStatus.NO_DOWNLOAD_STARTED ||
                 status === ModelDownloadStatus.FAILED
                 ) {
                 IconButton(
                     onClick = { onDownload() },
                     modifier = Modifier
-                        .aspectRatio(1f)
-                        .weight(1f)
+                        .height(30.dp)
+                        .weight(2f)
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Download,
@@ -111,8 +113,8 @@ fun PickModelView(
                         onChat()
                     },
                     modifier = Modifier
-                        .aspectRatio(1f)
                         .weight(1f)
+                        .height(30.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Chat,
@@ -123,8 +125,8 @@ fun PickModelView(
             } else {
                 IconButton(
                     enabled = false, onClick = {}, modifier = Modifier
-                        .aspectRatio(1f)
                         .weight(1f)
+                        .height(30.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.HourglassTop,
@@ -137,12 +139,25 @@ fun PickModelView(
                 IconButton(
                     onClick = { deleteOptionsOpened = true },
                     modifier = Modifier
-                        .aspectRatio(1f)
                         .weight(1f)
+                        .height(30.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Delete,
                         contentDescription = "start downloading",
+                        tint = MaterialTheme.colorScheme.onPrimary
+                    )
+                }
+            } else if (status === ModelDownloadStatus.DOWNLOADING) {
+                IconButton(
+                    onClick = { onCancel() },
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(30.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Cancel,
+                        contentDescription = "cancel download",
                         tint = MaterialTheme.colorScheme.onPrimary
                     )
                 }
