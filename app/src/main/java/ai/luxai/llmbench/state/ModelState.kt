@@ -42,29 +42,12 @@ class ModelState(
         }
     }
 
-    private fun getFileName(): String{
-        return url.split("/").last()
-    }
-
-    private fun getModelname(): String{
-        return getFileName().split(".").dropLast(1).joinToString(".")
-    }
-
-    private fun getFileIfExists(): File? {
-        return getFileFromFolder(getModelsDir(context), filename)
-    }
-
-    private fun getTempFile(): File? {
-        val tempFile = File(getTempModelsDir(context), filename)
-        if(!tempFile.exists()) return null
-        return tempFile
-    }
-
-    fun downloadFile() {
+    fun downloadFile(
+        onDownloadFail: (() -> Unit)? = null
+    ) {
         if (status.value == ModelDownloadStatus.DOWNLOADING) throw Exception("The download is already going on")
         if (status.value == ModelDownloadStatus.DOWNLOADED) throw Exception("The download has already been done")
 
-        // Optimized OkHttpClient with larger timeouts and better connection handling
         val client = OkHttpClient.Builder()
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
@@ -119,19 +102,19 @@ class ModelState(
 
                 withContext(Dispatchers.Main) {
                     if (success) {
-                        status.value = ModelDownloadStatus.DOWNLOADED
-                        file = getFileIfExists()
-                        progress.value = 1F
+                        onSuccess()
                     } else {
-                        status.value = ModelDownloadStatus.FAILED
-                        tempFile.delete()
+                        onFail()
+                        if(onDownloadFail !== null)
+                            onDownloadFail()
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    status.value = ModelDownloadStatus.FAILED
+                    onFail()
+                    if(onDownloadFail !== null)
+                        onDownloadFail()
                 }
-                getTempFile()?.delete()
             }
         }
     }
@@ -144,6 +127,41 @@ class ModelState(
             file = null
         }
         return deleteStatus ?: false
+    }
+
+    private fun onFail() {
+        status.value = ModelDownloadStatus.FAILED
+        eraseModelFromTemp()
+        progress.value = 0F
+        file = null
+    }
+
+    private fun onSuccess() {
+        status.value = ModelDownloadStatus.DOWNLOADED
+        file = getFileIfExists()
+        progress.value = 1F
+    }
+
+    private fun getFileName(): String{
+        return url.split("/").last()
+    }
+
+    private fun getModelname(): String{
+        return getFileName().split(".").dropLast(1).joinToString(".")
+    }
+
+    private fun getFileIfExists(): File? {
+        return getFileFromFolder(getModelsDir(context), filename)
+    }
+
+    private fun getTempFile(): File? {
+        val tempFile = File(getTempModelsDir(context), filename)
+        if(!tempFile.exists()) return null
+        return tempFile
+    }
+
+    private fun eraseModelFromTemp(): Boolean {
+        return getTempFile()?.delete() ?: false
     }
 }
 

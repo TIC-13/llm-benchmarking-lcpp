@@ -2,6 +2,8 @@ package ai.luxai.llmbench.screens.pickChat
 
 import ai.luxai.llmbench.components.AppBackground
 import ai.luxai.llmbench.components.AppTopBar
+import ai.luxai.llmbench.hooks.ModalProps
+import ai.luxai.llmbench.hooks.useModal
 import ai.luxai.llmbench.screens.pickChat.components.PickModelView
 import ai.luxai.llmbench.state.LLMViewModel
 import ai.luxai.llmbench.state.ModelDownloadStatus
@@ -38,6 +40,16 @@ fun PickChatScreen(
     val localFocusManager = LocalFocusManager.current
     val modelsState by viewModel.modelsState.collectAsState()
 
+    val modal = useModal()
+
+    val downloadFailedModalProps: (modelName: String) -> ModalProps = {
+        modelName ->
+            ModalProps(
+                title = "Download failed",
+                text = "Download failed for the model $modelName",
+            )
+    }
+
     Scaffold(
         topBar = {
             AppTopBar(
@@ -69,9 +81,10 @@ fun PickChatScreen(
                             status = item.status.value,
                             downloadProgress = item.progress.value,
                             onChat = {},
-                            onCancel = {},
                             onDelete = { item.delete() },
-                            onDownload = { item.downloadFile() },
+                            onDownload = { item.downloadFile(onDownloadFail = {
+                                modal.show(downloadFailedModalProps(item.modelName))
+                            })},
                         )
                     }
                     item {

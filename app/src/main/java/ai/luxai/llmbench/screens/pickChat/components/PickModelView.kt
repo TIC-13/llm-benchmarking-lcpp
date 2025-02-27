@@ -20,6 +20,7 @@ import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material.icons.outlined.Chat
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Download
+import androidx.compose.material.icons.outlined.HourglassTop
 import androidx.compose.material.icons.outlined.Pause
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material3.Icon
@@ -48,7 +49,6 @@ import androidx.compose.ui.unit.sp
 fun PickModelView(
     name: String,
     status: ModelDownloadStatus,
-    onCancel: () -> Unit,
     onDownload: () -> Unit,
     onChat: () -> Unit,
     onDelete: () -> Unit,
@@ -64,7 +64,7 @@ fun PickModelView(
             .defaultMinSize(0.dp, 60.dp)
             .clip(RoundedCornerShape(15.dp))
             .background(color = MaterialTheme.colorScheme.primary)
-            .padding(15.dp)
+            .padding(top = 15.dp, start = 15.dp, end = 15.dp, bottom = if(deleteOptionsOpened) 0.dp else 15.dp)
     ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(5.dp),
@@ -89,7 +89,9 @@ fun PickModelView(
                     .width(1.dp)
             )
 
-            if (status === ModelDownloadStatus.NO_DOWNLOAD_STARTED) {
+            if (status === ModelDownloadStatus.NO_DOWNLOAD_STARTED ||
+                status === ModelDownloadStatus.FAILED
+                ) {
                 IconButton(
                     onClick = { onDownload() },
                     modifier = Modifier
@@ -124,7 +126,7 @@ fun PickModelView(
                         .weight(1f)
                 ) {
                     Icon(
-                        imageVector = Icons.Outlined.Schedule,
+                        imageVector = Icons.Outlined.HourglassTop,
                         tint = MaterialTheme.colorScheme.onPrimary,
                         contentDescription = "pending",
                     )
