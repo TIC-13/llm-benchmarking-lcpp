@@ -1,6 +1,7 @@
 package ai.luxai.llmbench
 
 import ai.luxai.llmbench.screens.about.AboutScreen
+import ai.luxai.llmbench.screens.chat.ChatScreen
 import ai.luxai.llmbench.screens.home.HomeScreen
 import ai.luxai.llmbench.screens.licenses.LicensesScreen
 import ai.luxai.llmbench.screens.pickChat.PickChatScreen
@@ -47,6 +48,12 @@ fun NavView() {
             PickChatScreen(
                 navController,
                 viewModel
+            )
+        }
+
+        composable("chat") {
+            ChatScreen(
+                navController
             )
         }
 

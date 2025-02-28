@@ -84,7 +84,7 @@ fun PickChatScreen(
                             name = item.modelName,
                             status = item.status.value,
                             downloadProgress = item.progress.value,
-                            onChat = {},
+                            onChat = { navController.navigate("chat") },
                             onDelete = { item.delete() },
                             onDownload = { item.downloadFile(onDownloadFail = {
                                 modal.show(downloadFailedModalProps(item.modelName))
