@@ -52,6 +52,7 @@ fun PickModelView(
     name: String,
     status: ModelDownloadStatus,
     onDownload: () -> Unit,
+    canChat: Boolean = true,
     onChat: () -> Unit,
     onDelete: () -> Unit,
     onCancel: () -> Unit,
@@ -110,7 +111,7 @@ fun PickModelView(
             } else if (status === ModelDownloadStatus.DOWNLOADED) {
                 IconButton(
                     onClick = {
-                        onChat()
+                        if(canChat) onChat()
                     },
                     modifier = Modifier
                         .weight(1f)
@@ -118,7 +119,7 @@ fun PickModelView(
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Chat,
-                        tint = MaterialTheme.colorScheme.onPrimary,
+                        tint = if(canChat) MaterialTheme.colorScheme.onPrimary else Color.Gray,
                         contentDescription = "start chatting",
                     )
                 }

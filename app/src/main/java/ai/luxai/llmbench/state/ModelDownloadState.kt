@@ -25,7 +25,7 @@ enum class ModelDownloadStatus {
 fun huggingFaceModelFactory(
     context: Context,
     url: String
-): ModelState {
+): ModelDownloadState {
 
     val getHuggingFaceFileName: () -> String = {
         url.split("/").last()
@@ -43,7 +43,7 @@ fun huggingFaceModelFactory(
         url.split("co/")[1].split("/resolve")[0]
     }
 
-    return ModelState(
+    return ModelDownloadState(
         context,
         url,
         fileName = getHuggingFaceFileName(),
@@ -60,7 +60,7 @@ data class ModelLink(
     val address: String,
 )
 
-class ModelState(
+class ModelDownloadState(
     private val context: Context,
     private val url: String,
     val fileName: String,
@@ -68,10 +68,10 @@ class ModelState(
     val repoLink: ModelLink? = null
 ) {
     val status: MutableState<ModelDownloadStatus> = mutableStateOf(ModelDownloadStatus.NO_DOWNLOAD_STARTED)
-    val progress: MutableState<Float> = mutableFloatStateOf(0F) // mutableFloatStateOf also works
+    val progress: MutableState<Float> = mutableFloatStateOf(0F)
     var file = getFileIfExists()
 
-    private var downloadJob: Job? = null // Track the download coroutine
+    private var downloadJob: Job? = null
 
     init {
         if (file != null) {

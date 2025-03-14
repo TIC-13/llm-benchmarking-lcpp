@@ -53,7 +53,8 @@ fun NavView() {
 
         composable("chat") {
             ChatScreen(
-                navController
+                navController,
+                viewModel
             )
         }
 

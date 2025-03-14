@@ -21,4 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "LLM Benchmarking"
 include(":app")
- 
+include(":third-party:smolchat:smollm")

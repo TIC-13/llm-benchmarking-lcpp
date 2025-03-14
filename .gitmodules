@@ -1,0 +1,3 @@
+[submodule "third-party/smolchat"]
+	path = third-party/smolchat
+	url = https://github.com/shubham0204/SmolChat-Android

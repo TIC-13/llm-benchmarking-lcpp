@@ -8,9 +8,12 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Send
+import androidx.compose.material.icons.filled.Stop
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -25,12 +28,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun ChatTextBox(
     modifier: Modifier = Modifier,
-    onSend: (String) -> Unit
+    canSend: Boolean = false,
+    canBeStopped: Boolean = false,
+    isLoading: Boolean = false,
+    onSend: (String) -> Unit,
+    onStop: () -> Unit,
 ) {
 
     var text by remember { mutableStateOf("") }
@@ -59,22 +67,36 @@ fun ChatTextBox(
                 cursorColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
             )
         )
-        IconButton(
-            onClick = {
-                onSend(text)
-                text = ""
-            },
-            modifier = Modifier
-                .aspectRatio(1f)
-                .weight(1f),
-            enabled = (text.isNotEmpty())
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Send,
-                contentDescription = "send message",
-                tint = MaterialTheme.colorScheme.onPrimary,
-                //modifier = Modifier.background(color = MaterialTheme.colorScheme.primary)
+        if(isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .size(25.dp)
+                    .weight(1f)
+                    .padding(horizontal = 3.dp),
+                color = Color.White,
+                strokeWidth = 2.dp
             )
+        }else{
+            IconButton(
+                onClick = {
+                    if(canBeStopped){
+                        onStop()
+                    }else if(text.trim() !== ""){
+                        onSend(text)
+                        text = ""
+                    }
+                },
+                modifier = Modifier
+                    .aspectRatio(1f)
+                    .weight(1f),
+                enabled = canSend || canBeStopped
+            ) {
+                Icon(
+                    imageVector = if(canBeStopped) Icons.Filled.Stop else Icons.Filled.Send,
+                    contentDescription = "send message",
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
+            }
         }
     }
 }
