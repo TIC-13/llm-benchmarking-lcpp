@@ -46,10 +46,10 @@ enum class ModelState {
 }
 
 class LLMViewModel(
-    context: Context
+    modelsDownloadState: List<ModelDownloadState>,
 ) : ViewModel() {
 
-    private val _modelsDownloadState = MutableStateFlow(loadModelsDownloadState(context))
+    private val _modelsDownloadState = MutableStateFlow(modelsDownloadState)
     val modelsDownloadState = _modelsDownloadState.asStateFlow()
 
     private val _messages = MutableStateFlow(emptyList<Message>())
@@ -68,14 +68,6 @@ class LLMViewModel(
 
     private var responseGenerationJob: Job? = null
 
-    private val stopToast = Toast.makeText(context, "Stopping text generation, please wait...", Toast.LENGTH_LONG)
-
-    private val toastError: (message: String) -> Unit = {
-        CoroutineScope(Dispatchers.Main).launch {
-            Toast.makeText(context, "Error: $it", Toast.LENGTH_SHORT).show()
-        }
-    }
-
     var onFinishPausing: (() -> Unit)? = null
 
     suspend fun setModel(
@@ -92,17 +84,6 @@ class LLMViewModel(
 
         if(onFinishLoading !== null)
             onFinishLoading()
-    }
-
-    fun downloadModels(
-
-    ) {
-        val downloadStates = _modelsDownloadState.value
-
-        downloadStates.map {
-            it.downloadFile()
-        }
-
     }
 
     private suspend fun loadModel(clearMessages: Boolean = true) {
@@ -141,7 +122,7 @@ class LLMViewModel(
         _modelState.value = ModelState.NOT_LOADED
     }
 
-    fun sendUserQuery(userMessage: String) {
+    fun sendUserQuery(userMessage: String, onError: (errorMessage: String) -> Unit) {
 
         if(_modelState.value !== ModelState.READY)
             throw Exception("Model is not ready to answer questions. Current status: ${_modelState.value}")
@@ -169,7 +150,7 @@ class LLMViewModel(
                 }catch(e: CancellationException){
                     //if user cancel, do nothing
                 }catch(e: Exception) {
-                    e.message?.let { toastError(it) }
+                    e.message?.let { onError(it) }
                 }finally {
                     onCompletionJobEnded()
                 }
@@ -182,7 +163,7 @@ class LLMViewModel(
         responseGenerationJob = null
     }
 
-    fun stopGeneration() {
+    fun stopGeneration(onStop: () -> Unit) {
 
         if(_modelState.value == ModelState.STOPPING)
             return;
@@ -197,7 +178,8 @@ class LLMViewModel(
 
         responseGenerationJob?.let { job ->
             if (job.isActive) {
-                stopToast.show()
+                //stopToast.show()
+                onStop()
                 CoroutineScope(Dispatchers.Default).launch {
                     job.cancel() // Request cancellation
                     job.join()
@@ -212,18 +194,8 @@ class LLMViewModel(
             afterCancel()
     }
 
-    fun stopAndUnload() {
+    fun stopAndUnload(onStop: () -> Unit) {
         onFinishPausing = { unload() }
-        stopGeneration()
-    }
-}
-
-class LLMViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(LLMViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return LLMViewModel(context) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
+        stopGeneration {onStop()}
     }
 }

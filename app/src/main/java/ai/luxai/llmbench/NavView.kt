@@ -7,11 +7,10 @@ import ai.luxai.llmbench.screens.licenses.LicensesScreen
 import ai.luxai.llmbench.screens.modelSelection.ModelSelectionScreen
 import ai.luxai.llmbench.screens.pickChat.PickChatScreen
 import ai.luxai.llmbench.state.LLMViewModel
-import ai.luxai.llmbench.state.LLMViewModelFactory
+import ai.luxai.llmbench.state.loadModelsDownloadState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -23,7 +22,7 @@ fun NavView() {
     val context = LocalContext.current
 
     val navController = rememberNavController()
-    val viewModel: LLMViewModel = viewModel(factory = LLMViewModelFactory(context))
+    val viewModel = LLMViewModel(loadModelsDownloadState(context))
 
     NavHost(navController = navController, startDestination = "home") {
 

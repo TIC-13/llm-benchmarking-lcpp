@@ -7,6 +7,7 @@ import ai.luxai.llmbench.screens.chat.components.ChatTextBox
 import ai.luxai.llmbench.state.LLMViewModel
 import ai.luxai.llmbench.state.ModelState
 import ai.luxai.llmbench.views.MessagesView
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -19,6 +20,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import kotlinx.coroutines.CoroutineScope
@@ -32,6 +34,8 @@ fun ChatScreen(
     viewModel: LLMViewModel,
 ) {
 
+    val context = LocalContext.current
+
     val messages by viewModel.messages.collectAsState()
     val modelState by viewModel.modelState.collectAsState()
     val isThinking by viewModel.isThinking.collectAsState()
@@ -41,9 +45,22 @@ fun ChatScreen(
 
     val isLoading = modelState === ModelState.LOADING
 
+
+    fun sendStopToast() {
+        val toast = Toast.makeText(context, "Stopping text generation, please wait...", Toast.LENGTH_LONG)
+        toast.show()
+    }
+
+    fun sendErrorToast(errorMessage: String) {
+        val toast = Toast.makeText(context, "Error: $errorMessage", Toast.LENGTH_SHORT)
+        toast.show()
+    }
+
     DisposableEffect(Unit) {
         onDispose {
-            viewModel.stopAndUnload()
+            viewModel.stopAndUnload {
+                sendStopToast()
+            }
         }
     }
 
@@ -81,8 +98,8 @@ fun ChatScreen(
                     canSend = modelState == ModelState.READY,
                     canBeStopped = modelState == ModelState.ANSWERING,
                     isLoading = isLoading,
-                    onStop = { viewModel.stopGeneration() },
-                    onSend = { viewModel.sendUserQuery(it) }
+                    onStop = { viewModel.stopGeneration { sendStopToast() } },
+                    onSend = { viewModel.sendUserQuery(it) { msg -> sendErrorToast(msg) } }
                 )
             }
         }
