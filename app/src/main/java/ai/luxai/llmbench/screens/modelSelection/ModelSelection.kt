@@ -4,14 +4,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import ai.luxai.llmbench.components.AppBackground
 import ai.luxai.llmbench.components.AppTopBar
+import ai.luxai.llmbench.components.Link
 import ai.luxai.llmbench.hooks.ModalProps
 import ai.luxai.llmbench.hooks.useCounter
 import ai.luxai.llmbench.hooks.useModal
+import ai.luxai.llmbench.screens.modelSelection.components.CheckboxData
+import ai.luxai.llmbench.screens.modelSelection.components.ModelCardBenchmarking
 import ai.luxai.llmbench.screens.modelSelection.hooks.DownloadForBenchmarkingState
 import ai.luxai.llmbench.screens.modelSelection.hooks.useDownloadForBenchmarking
-import ai.luxai.llmbench.screens.pickChat.components.CheckboxAction
-import ai.luxai.llmbench.screens.pickChat.components.Link
-import ai.luxai.llmbench.screens.pickChat.components.PickModelView
 import ai.luxai.llmbench.state.LLMViewModel
 import ai.luxai.llmbench.utils.navigateToUrl
 import androidx.compose.foundation.layout.Column
@@ -54,6 +54,8 @@ fun ModelSelectionScreen(
         modelsDownloadState
     )
 
+    val isDownloading = downloadState == DownloadForBenchmarkingState.PROGRESS
+
     Scaffold(topBar = {
         AppTopBar(
             title =
@@ -82,18 +84,16 @@ fun ModelSelectionScreen(
                         items = modelsDownloadState,
                     ) { item ->
                         Spacer(modifier = Modifier.height(15.dp))
-                        PickModelView(
-                            canChat = false,
+                        ModelCardBenchmarking(
                             name = item.modelName,
                             status = item.status.value,
                             downloadProgress = item.progress.value,
-                            onChat = { },
-                            onDelete = { item.delete() },
-                            onDownload = {
+                            onDelete = if(!isDownloading) {{ item.delete() }} else null,
+                            onDownload = if(!isDownloading) {{
                                 item.downloadFile(onDownloadFail = {
                                     modal.show(downloadFailedModalProps(item.modelName))
                                 })
-                            },
+                            }} else null,
                             onCancel = { cancelDownloads() },
                             link =
                             if (item.repoLink !== null)
@@ -102,12 +102,11 @@ fun ModelSelectionScreen(
                                     onPress = { navigateToUrl(context, item.repoLink.address) }
                                 )
                             else null,
-                            checkboxMode = CheckboxAction(
+                            checkbox = CheckboxData(
                                 isChecked = item.isCheckedForDownload.value,
                                 setChecked = { item.isCheckedForDownload.value = it },
-                                enabled = downloadState !== DownloadForBenchmarkingState.PROGRESS
-                            ),
-                            disableButtons = downloadState == DownloadForBenchmarkingState.PROGRESS
+                                enabled = !isDownloading
+                            )
                         )
                     }
                     item {

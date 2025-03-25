@@ -2,10 +2,10 @@ package ai.luxai.llmbench.screens.pickChat
 
 import ai.luxai.llmbench.components.AppBackground
 import ai.luxai.llmbench.components.AppTopBar
+import ai.luxai.llmbench.components.Link
 import ai.luxai.llmbench.hooks.ModalProps
 import ai.luxai.llmbench.hooks.useModal
-import ai.luxai.llmbench.screens.pickChat.components.Link
-import ai.luxai.llmbench.screens.pickChat.components.PickModelView
+import ai.luxai.llmbench.screens.pickChat.components.ModelCardChat
 import ai.luxai.llmbench.state.LLMViewModel
 import ai.luxai.llmbench.state.ModelState
 import ai.luxai.llmbench.utils.navigateToUrl
@@ -90,7 +90,7 @@ fun PickChatScreen(
                         items = modelsDownloadState,
                     ) { item ->
                         Spacer(modifier = Modifier.height(15.dp))
-                        PickModelView(
+                        ModelCardChat(
                             canChat = canChat,
                             name = item.modelName,
                             status = item.status.value,
