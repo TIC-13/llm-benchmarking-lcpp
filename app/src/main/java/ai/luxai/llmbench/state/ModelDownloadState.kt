@@ -71,6 +71,8 @@ class ModelDownloadState(
     val progress: MutableState<Float> = mutableFloatStateOf(0F)
     var file = getFileIfExists()
 
+    var isCheckedForDownload = mutableStateOf(true)
+
     private var downloadJob: Job? = null
 
     init {

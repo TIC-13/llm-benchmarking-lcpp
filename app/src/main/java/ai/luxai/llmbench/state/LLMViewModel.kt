@@ -94,6 +94,17 @@ class LLMViewModel(
             onFinishLoading()
     }
 
+    fun downloadModels(
+
+    ) {
+        val downloadStates = _modelsDownloadState.value
+
+        downloadStates.map {
+            it.downloadFile()
+        }
+
+    }
+
     private suspend fun loadModel(clearMessages: Boolean = true) {
 
         val pickedModel = _model.value ?: throw Exception("No model has been setted")

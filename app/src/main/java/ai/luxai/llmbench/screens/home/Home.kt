@@ -82,7 +82,7 @@ fun HomeScreen(
 
                     HomeScreenButton(
                         icon = VectorIcon(Icons.Default.BarChart),
-                        onClick = { runWithDelayAfter { }},
+                        onClick = { runWithDelayAfter { navController.navigate("pickBenchmarks") }},
                         text = "Start benchmarking"
                     )
 

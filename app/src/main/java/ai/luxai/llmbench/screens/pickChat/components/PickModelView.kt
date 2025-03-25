@@ -1,5 +1,6 @@
 package ai.luxai.llmbench.screens.pickChat.components
 
+import ai.luxai.llmbench.components.CustomCheckbox
 import ai.luxai.llmbench.components.PressableLink
 import ai.luxai.llmbench.state.ModelDownloadStatus
 import androidx.compose.foundation.background
@@ -7,7 +8,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -42,6 +42,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+data class CheckboxAction(
+    val isChecked: Boolean,
+    val setChecked: (checked: Boolean) -> Unit,
+    val enabled: Boolean = true
+)
+
 data class Link(
     val label: String,
     val onPress: () -> Unit
@@ -58,6 +64,8 @@ fun PickModelView(
     onCancel: () -> Unit,
     downloadProgress: Float?,
     link: Link? = null,
+    checkboxMode: CheckboxAction? = null,
+    disableButtons: Boolean = false,
 ) {
 
     var deleteOptionsOpened by rememberSaveable { mutableStateOf(false) }
@@ -93,25 +101,33 @@ fun PickModelView(
                     .height(20.dp)
                     .width(1.dp)
             )
+
             if (status === ModelDownloadStatus.NO_DOWNLOAD_STARTED ||
                 status === ModelDownloadStatus.FAILED
                 ) {
+                if(checkboxMode !== null){
+                    CustomCheckbox(
+                        checked = checkboxMode.isChecked,
+                        onCheckedChange = checkboxMode.setChecked,
+                        enabled = checkboxMode.enabled
+                    )
+                }
                 IconButton(
-                    onClick = { onDownload() },
+                    onClick = { if(!disableButtons) onDownload() },
                     modifier = Modifier
                         .height(30.dp)
-                        .weight(2f)
+                        .weight(if(checkboxMode !== null) 1f else 2f)
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Download,
-                        tint = MaterialTheme.colorScheme.onPrimary,
+                        tint = if(disableButtons) Color.Gray else MaterialTheme.colorScheme.onPrimary,
                         contentDescription = "start downloading",
                     )
                 }
-            } else if (status === ModelDownloadStatus.DOWNLOADED) {
+            } else if (status === ModelDownloadStatus.DOWNLOADED && checkboxMode === null) {
                 IconButton(
                     onClick = {
-                        if(canChat) onChat()
+                        if (canChat && !disableButtons) onChat()
                     },
                     modifier = Modifier
                         .weight(1f)
@@ -119,10 +135,16 @@ fun PickModelView(
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Chat,
-                        tint = if(canChat) MaterialTheme.colorScheme.onPrimary else Color.Gray,
+                        tint = if(disableButtons) Color.Gray else MaterialTheme.colorScheme.onPrimary,
                         contentDescription = "start chatting",
                     )
                 }
+            }else if(checkboxMode !== null && status !== ModelDownloadStatus.DOWNLOADING){
+                CustomCheckbox(
+                    checked = checkboxMode.isChecked,
+                    onCheckedChange = checkboxMode.setChecked,
+                    enabled = checkboxMode.enabled
+                )
             } else {
                 IconButton(
                     enabled = false, onClick = {}, modifier = Modifier
@@ -136,17 +158,18 @@ fun PickModelView(
                     )
                 }
             }
+
             if (status == ModelDownloadStatus.DOWNLOADED) {
                 IconButton(
-                    onClick = { deleteOptionsOpened = true },
+                    onClick = { if(!disableButtons) deleteOptionsOpened = true },
                     modifier = Modifier
                         .weight(1f)
                         .height(30.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Delete,
+                        tint = if(disableButtons) Color.Gray else MaterialTheme.colorScheme.onPrimary,
                         contentDescription = "start downloading",
-                        tint = MaterialTheme.colorScheme.onPrimary
                     )
                 }
             } else if (status === ModelDownloadStatus.DOWNLOADING) {
