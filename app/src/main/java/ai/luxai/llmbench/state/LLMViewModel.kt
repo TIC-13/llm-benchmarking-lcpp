@@ -49,6 +49,14 @@ class LLMViewModel(
     modelsDownloadState: List<ModelDownloadState>,
 ) : ViewModel() {
 
+    companion object {
+        fun Factory(modelsDownloadState: List<ModelDownloadState>) = object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return LLMViewModel(modelsDownloadState) as T
+            }
+        }
+    }
+
     private val _modelsDownloadState = MutableStateFlow(modelsDownloadState)
     val modelsDownloadState = _modelsDownloadState.asStateFlow()
 
