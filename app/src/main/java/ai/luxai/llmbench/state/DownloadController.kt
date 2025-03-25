@@ -8,6 +8,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import kotlin.coroutines.resume
 
 /**
@@ -25,7 +26,15 @@ class DownloadController(
 ) {
     private var isInterrupted = false
 
-    fun interrupt() {
+    // Interrupt the download process
+    suspend fun interrupt() {
+        isInterrupted = true
+        downloadJob?.cancelAndJoin()
+        downloadJob = null
+    }
+
+    // Interrupt without suspension (for non-coroutine contexts)
+    fun interruptAsync() {
         isInterrupted = true
         scope.launch {
             downloadJob?.cancelAndJoin()
@@ -33,8 +42,10 @@ class DownloadController(
         }
     }
 
+    // Check if the download is interrupted
     fun isInterrupted() = isInterrupted
 
+    // Check if the download is active
     fun isActive() = downloadJob?.isActive == true
 }
 
@@ -49,20 +60,16 @@ fun downloadModelsSequentially(
         return DownloadController(CoroutineScope(Dispatchers.Main + SupervisorJob()), null)
     }
 
-    val modelsFiltered = models.filter {
-        it.isCheckedForDownload.value && it.status.value !== ModelDownloadStatus.DOWNLOADED
-    }
-
     val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     var downloadJob: Job? = null
 
     downloadJob = scope.launch {
         try {
-            val totalModels = modelsFiltered.size
+            val totalModels = models.size
             var completedModels = 0
             val controller = DownloadController(scope, downloadJob)
 
-            for (model in modelsFiltered) {
+            for (model in models) {
                 if (controller.isInterrupted()) {
                     break
                 }
@@ -70,54 +77,83 @@ fun downloadModelsSequentially(
                 // Skip already downloaded models
                 if (model.status.value == ModelDownloadStatus.DOWNLOADED) {
                     completedModels++
-                    onProgress?.invoke(completedModels.toFloat() / totalModels)
+                    withContext(Dispatchers.Main) {
+                        onProgress?.invoke(completedModels.toFloat() / totalModels)
+                    }
                     continue
                 }
 
                 // Wait for the current model to download
-                suspendCancellableCoroutine { continuation ->
+                val success = suspendCancellableCoroutine<Boolean> { continuation ->
+                    // Store if we've already resumed to prevent multiple resumes
+                    var hasResumed = false
+
                     model.downloadFile(
                         onDownloadFail = {
-                            continuation.resume(false)
+                            if (!hasResumed && !controller.isInterrupted()) {
+                                hasResumed = true
+                                continuation.resume(false)
+                            }
                         }
                     )
 
                     // Monitor progress and status
                     scope.launch {
                         while (model.status.value == ModelDownloadStatus.DOWNLOADING && !controller.isInterrupted()) {
-                            // Calculate overall progress
                             val modelProgress = model.progress.value
                             val overallProgress = (completedModels + modelProgress) / totalModels
-                            onProgress?.invoke(overallProgress.coerceIn(0f, 1f))
+                            withContext(Dispatchers.Main) {
+                                onProgress?.invoke(overallProgress.coerceIn(0f, 1f))
+                            }
                             kotlinx.coroutines.delay(100)
                         }
 
                         if (controller.isInterrupted()) {
                             model.cancelDownload()
-                            continuation.resume(false)
-                        } else if (model.status.value == ModelDownloadStatus.DOWNLOADED) {
+                            if (!hasResumed) {
+                                hasResumed = true
+                                continuation.resume(false)
+                            }
+                        } else if (model.status.value == ModelDownloadStatus.DOWNLOADED && !hasResumed) {
+                            hasResumed = true
                             completedModels++
-                            onProgress?.invoke(completedModels.toFloat() / totalModels)
+                            withContext(Dispatchers.Main) {
+                                onProgress?.invoke(completedModels.toFloat() / totalModels)
+                            }
                             continuation.resume(true)
-                        } else if (model.status.value == ModelDownloadStatus.FAILED) {
+                        } else if (model.status.value == ModelDownloadStatus.FAILED && !hasResumed) {
+                            hasResumed = true
                             continuation.resume(false)
                         }
                     }
-                }.let { success ->
-                    if (!success) {
-                        if (!controller.isInterrupted()) {
-                            onError?.invoke(model, null)
+
+                    // Ensure cancellation cleanup
+                    continuation.invokeOnCancellation {
+                        if (!hasResumed) {
+                            hasResumed = true
+                            model.cancelDownload()
+                            continuation.resume(false)
                         }
-                        return@launch  // Exit on failure or interruption
                     }
+                }
+
+                if (!success || controller.isInterrupted()) {
+                    if (!controller.isInterrupted()) {
+                        onError?.invoke(model, null)
+                    }
+                    break
                 }
             }
 
             if (!controller.isInterrupted()) {
-                onComplete?.invoke()
+                withContext(Dispatchers.Main) {
+                    onComplete?.invoke()
+                }
             }
         } catch (e: Exception) {
-            throw e
+            //if (!isActive()) {  // Only report error if not interrupted
+            //    onError?.invoke(models.getOrNull(completedModels), e)
+            //}
         } finally {
             downloadJob = null
         }
@@ -125,30 +161,3 @@ fun downloadModelsSequentially(
 
     return DownloadController(scope, downloadJob)
 }
-
-// Example usage:
-/*
-fun exampleUsage(context: Context) {
-    val models = listOf(
-        huggingFaceModelFactory(context, "https://huggingface.co/model1.gguf"),
-        huggingFaceModelFactory(context, "https://huggingface.co/model2.gguf")
-    )
-
-    val controller = downloadModelsSequentially(
-        context = context,
-        models = models,
-        onProgress = { progress ->
-            println("Overall progress: ${progress * 100}%")
-        },
-        onComplete = {
-            println("All models downloaded successfully")
-        },
-        onError = { failedModel, exception ->
-            println("Download failed for ${failedModel.modelName}: ${exception?.message}")
-        }
-    )
-
-    // To interrupt the downloads later:
-    // controller.interrupt()
-}
-*/

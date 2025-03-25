@@ -11,6 +11,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 enum class DownloadForBenchmarkingState {
     NO_MODEL_SELECTED, NOT_STARTED, FINISHED, PROGRESS
@@ -62,11 +66,21 @@ fun useDownloadForBenchmarking(
     }
 
     fun cancelDownloads() {
-        downloadController?.interrupt()
-        downloadController = null
-        modelsDownloadState
-            .map { if (it.status.value === ModelDownloadStatus.DOWNLOADING) it.cancelDownload() }
-        refreshDownloadStatus(persistIfProgressing = false)
+        // Launch interruption in a coroutine instead of blocking
+        CoroutineScope(Dispatchers.Main).launch {
+            downloadController?.interrupt()
+            downloadController = null
+
+            // Cancel any ongoing individual downloads
+            modelsDownloadState.forEach { model ->
+                if (model.status.value == ModelDownloadStatus.DOWNLOADING) {
+                    model.cancelDownload()
+                }
+            }
+
+            // Refresh status after cancellation
+            refreshDownloadStatus(persistIfProgressing = false)
+        }
     }
 
     LaunchedEffect(
