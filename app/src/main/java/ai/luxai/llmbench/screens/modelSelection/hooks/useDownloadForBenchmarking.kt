@@ -90,7 +90,8 @@ fun useDownloadForBenchmarking(
         refreshDownloadStatus(persistIfProgressing = true)
     }
 
-    DisposableEffect(modelsDownloadState) {
+    DisposableEffect(Unit) {
+        cancelDownloads()
         onDispose {
             cancelDownloads()
         }
