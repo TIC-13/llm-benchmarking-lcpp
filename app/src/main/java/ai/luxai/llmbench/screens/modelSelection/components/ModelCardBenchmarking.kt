@@ -12,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Download
+import androidx.compose.material.icons.outlined.HourglassTop
 import androidx.compose.runtime.Composable
 
 data class CheckboxData(
@@ -28,7 +29,6 @@ fun ModelCardBenchmarking(
     status: ModelDownloadStatus,
     onDownload: (() -> Unit)?,
     onDelete: (() -> Unit)?,
-    onCancel: () -> Unit,
     checkbox: CheckboxData,
 ) {
     ModelCard(name, link, downloadProgress) {
@@ -47,14 +47,6 @@ fun ModelCardBenchmarking(
                 )
             }
 
-            ModelDownloadStatus.DOWNLOADING -> {
-                ModalActionIconButton(
-                    imageVector = Icons.Outlined.Cancel,
-                    contentDescription = "cancel download",
-                    modalProps = getCancelDownloadModalProps(onCancel),
-                )
-            }
-
             ModelDownloadStatus.DOWNLOADED -> {
                 ModalActionIconButton(
                     imageVector = Icons.Outlined.Delete,
@@ -64,7 +56,12 @@ fun ModelCardBenchmarking(
                 )
             }
 
-            else -> {}
+            else ->
+                ActionIconButton(
+                    imageVector = Icons.Outlined.HourglassTop,
+                    contentDescription = "downloading model",
+                    onClick = if(onDownload !== null) {{}} else null,
+                )
         }
     }
 }

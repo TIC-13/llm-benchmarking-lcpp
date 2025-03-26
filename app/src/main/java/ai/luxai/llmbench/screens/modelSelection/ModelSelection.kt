@@ -13,6 +13,7 @@ import ai.luxai.llmbench.screens.modelSelection.components.ModelCardBenchmarking
 import ai.luxai.llmbench.screens.modelSelection.hooks.DownloadForBenchmarkingState
 import ai.luxai.llmbench.screens.modelSelection.hooks.useDownloadForBenchmarking
 import ai.luxai.llmbench.state.LLMViewModel
+import ai.luxai.llmbench.state.ModelDownloadStatus
 import ai.luxai.llmbench.state.ModelState
 import ai.luxai.llmbench.utils.navigateToUrl
 import androidx.compose.foundation.layout.Column
@@ -52,6 +53,8 @@ fun ModelSelectionScreen(
 
     val canChat = modelState === ModelState.NOT_LOADED
 
+    val anyIsDownloading = modelsDownloadState.any { it.status.value === ModelDownloadStatus.DOWNLOADING }
+
     val modal = useModal()
     val counter = useCounter(limit = 3)
 
@@ -68,6 +71,14 @@ fun ModelSelectionScreen(
     }
 
     val isDownloading = downloadState == DownloadForBenchmarkingState.PROGRESS
+
+    val cancelDownloadButton = @Composable {
+        BottomButton(
+            imageVector = Icons.Default.Cancel,
+            label = "Cancel downloads",
+            onClick = { cancelDownloads() }
+        )
+    }
 
     Scaffold(topBar = {
         AppTopBar(
@@ -107,7 +118,6 @@ fun ModelSelectionScreen(
                                     modal.show(downloadFailedModalProps(item.modelName))
                                 })
                             }} else null,
-                            onCancel = { cancelDownloads() },
                             link =
                             if (item.repoLink !== null)
                                 Link(
@@ -124,36 +134,57 @@ fun ModelSelectionScreen(
                     }
                     item {
                         Spacer(modifier = Modifier.height(15.dp))
-                        when (downloadState) {
-                            DownloadForBenchmarkingState.NO_MODEL_SELECTED ->
-                                Button(onClick = {}) {
-                                    IconForButton(Icons.Default.Info)
-                                    Text("Select at least a model")
-                                }
+                        if(anyIsDownloading){
+                            cancelDownloadButton()
+                        }else{
+                            when (downloadState) {
+                                DownloadForBenchmarkingState.NO_MODEL_SELECTED ->
+                                    BottomButton(
+                                        imageVector = Icons.Default.Info,
+                                        label = "Select at least one model",
+                                        onClick = {}
+                                    )
 
-                            DownloadForBenchmarkingState.NOT_STARTED ->
-                                Button(onClick = { startDownloads() }) {
-                                    IconForButton(Icons.Default.Download)
-                                    Text("Start download for benchmarking")
-                                }
+                                DownloadForBenchmarkingState.NOT_STARTED ->
+                                    BottomButton(
+                                        imageVector = Icons.Default.Download,
+                                        label = "Start download for benchmarking",
+                                        onClick = { startDownloads() }
+                                    )
 
-                            DownloadForBenchmarkingState.PROGRESS ->
-                                Button(onClick = { cancelDownloads() }) {
-                                    IconForButton(Icons.Default.Cancel)
-                                    Text("Cancel download")
-                                }
+                                DownloadForBenchmarkingState.PROGRESS ->
+                                    cancelDownloadButton()
 
-                            DownloadForBenchmarkingState.FINISHED ->
-                                Button(onClick = { startBenchmark() }, enabled = canChat) {
-                                    IconForButton(Icons.Default.BarChart)
-                                    Text("Start benchmarking")
-                                }
+                                DownloadForBenchmarkingState.FINISHED ->
+                                    BottomButton(
+                                        imageVector = Icons.Default.BarChart,
+                                        label = "Start benchmarking",
+                                        onClick = { startBenchmark() },
+                                        enabled = canChat
+                                    )
+                            }
                         }
                         Spacer(modifier = Modifier.height(15.dp))
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+fun BottomButton(
+    imageVector: ImageVector,
+    label: String,
+    onClick: () -> Unit,
+    enabled: Boolean = true
+) {
+    Button(
+        onClick = { onClick() },
+        enabled = enabled
+    ){
+        IconForButton(imageVector)
+        Text(label)
     }
 }
 
