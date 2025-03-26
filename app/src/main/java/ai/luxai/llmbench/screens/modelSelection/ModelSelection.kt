@@ -13,6 +13,7 @@ import ai.luxai.llmbench.screens.modelSelection.components.ModelCardBenchmarking
 import ai.luxai.llmbench.screens.modelSelection.hooks.DownloadForBenchmarkingState
 import ai.luxai.llmbench.screens.modelSelection.hooks.useDownloadForBenchmarking
 import ai.luxai.llmbench.state.LLMViewModel
+import ai.luxai.llmbench.state.ModelState
 import ai.luxai.llmbench.utils.navigateToUrl
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -27,6 +28,7 @@ import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -46,13 +48,24 @@ fun ModelSelectionScreen(
 
     val context = LocalContext.current
     val modelsDownloadState by viewModel.modelsDownloadState.collectAsState()
+    val modelState by viewModel.modelState.collectAsState()
+
+    val canChat = modelState === ModelState.NOT_LOADED
 
     val modal = useModal()
     val counter = useCounter(limit = 3)
 
+    fun startBenchmark() {
+        viewModel.setSelectedModelsToBenchmarking()
+        navController.navigate("benchmark")
+    }
+
     val (downloadState, cancelDownloads, startDownloads) = useDownloadForBenchmarking(
         modelsDownloadState
-    )
+    ) {
+
+        startBenchmark()
+    }
 
     val isDownloading = downloadState == DownloadForBenchmarkingState.PROGRESS
 
@@ -131,7 +144,7 @@ fun ModelSelectionScreen(
                                 }
 
                             DownloadForBenchmarkingState.FINISHED ->
-                                Button(onClick = {}) {
+                                Button(onClick = { startBenchmark() }, enabled = canChat) {
                                     IconForButton(Icons.Default.BarChart)
                                     Text("Start benchmarking")
                                 }

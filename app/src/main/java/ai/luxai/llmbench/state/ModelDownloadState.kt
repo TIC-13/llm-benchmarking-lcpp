@@ -72,6 +72,7 @@ class ModelDownloadState(
     var file = getFileIfExists()
 
     var isCheckedForDownload = mutableStateOf(true)
+    var selectedToBenchmarking = mutableStateOf(false)
 
     private var downloadJob: Job? = null
 

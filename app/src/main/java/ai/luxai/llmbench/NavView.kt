@@ -1,6 +1,7 @@
 package ai.luxai.llmbench
 
 import ai.luxai.llmbench.screens.about.AboutScreen
+import ai.luxai.llmbench.screens.benchmark.BenchmarkScreen
 import ai.luxai.llmbench.screens.chat.ChatScreen
 import ai.luxai.llmbench.screens.home.HomeScreen
 import ai.luxai.llmbench.screens.licenses.LicensesScreen
@@ -63,6 +64,13 @@ fun NavView() {
 
         composable("pickBenchmarks") {
             ModelSelectionScreen(
+                navController,
+                viewModel
+            )
+        }
+
+        composable("benchmark") {
+            BenchmarkScreen(
                 navController,
                 viewModel
             )

@@ -130,7 +130,14 @@ class LLMViewModel(
         _modelState.value = ModelState.NOT_LOADED
     }
 
-    fun sendUserQuery(userMessage: String, onError: (errorMessage: String) -> Unit) {
+    fun setSelectedModelsToBenchmarking() {
+        for (model in _modelsDownloadState.value) {
+            if(model.isCheckedForDownload.value)
+                model.selectedToBenchmarking.value = true
+        }
+    }
+
+    fun sendUserQuery(userMessage: String, onError: ((errorMessage: String) -> Unit)?=null, onFinish: (() -> Unit)?=null) {
 
         if(_modelState.value !== ModelState.READY)
             throw Exception("Model is not ready to answer questions. Current status: ${_modelState.value}")
@@ -155,10 +162,17 @@ class LLMViewModel(
                             _messages.value = _messages.value.dropLast(1).plus(Message(last.text + it, Role.APP))
                         }
                     }
+                    if (onFinish != null) {
+                        onFinish()
+                    }
                 }catch(e: CancellationException){
                     //if user cancel, do nothing
                 }catch(e: Exception) {
-                    e.message?.let { onError(it) }
+                    e.message?.let {
+                        if (onError != null) {
+                            onError(it)
+                        }
+                    }
                 }finally {
                     onCompletionJobEnded()
                 }
@@ -167,8 +181,8 @@ class LLMViewModel(
 
     private fun onCompletionJobEnded() {
         _isThinking.value = false
-        _modelState.value = ModelState.READY
         responseGenerationJob = null
+        _modelState.value = ModelState.READY
     }
 
     fun stopGeneration(onStop: () -> Unit) {

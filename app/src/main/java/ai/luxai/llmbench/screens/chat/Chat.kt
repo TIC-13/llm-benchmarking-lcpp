@@ -45,7 +45,6 @@ fun ChatScreen(
 
     val isLoading = modelState === ModelState.LOADING
 
-
     fun sendStopToast() {
         val toast = Toast.makeText(context, "Stopping text generation, please wait...", Toast.LENGTH_LONG)
         toast.show()
@@ -99,7 +98,7 @@ fun ChatScreen(
                     canBeStopped = modelState == ModelState.ANSWERING,
                     isLoading = isLoading,
                     onStop = { viewModel.stopGeneration { sendStopToast() } },
-                    onSend = { viewModel.sendUserQuery(it) { msg -> sendErrorToast(msg) } }
+                    onSend = { viewModel.sendUserQuery(it, onError = { msg -> sendErrorToast(msg) })  }
                 )
             }
         }

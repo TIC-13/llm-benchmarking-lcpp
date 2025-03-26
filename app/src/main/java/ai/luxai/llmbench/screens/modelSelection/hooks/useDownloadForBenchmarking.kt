@@ -14,7 +14,6 @@ import androidx.compose.runtime.setValue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 enum class DownloadForBenchmarkingState {
     NO_MODEL_SELECTED, NOT_STARTED, FINISHED, PROGRESS
@@ -28,7 +27,8 @@ data class DownloadForBenchmarking(
 
 @Composable
 fun useDownloadForBenchmarking(
-    modelsDownloadState: List<ModelDownloadState>
+    modelsDownloadState: List<ModelDownloadState>,
+    onFinish: () -> Unit
 ): DownloadForBenchmarking {
 
     var downloadController by remember { mutableStateOf<DownloadController?>(null) }
@@ -106,6 +106,7 @@ fun useDownloadForBenchmarking(
             onComplete = {
                 println("All models downloaded")
                 downloadState = DownloadForBenchmarkingState.FINISHED
+                onFinish()
             },
             onError = { failedModel, exception ->
                 println("Download failed for ${failedModel.modelName}: ${exception?.message}")
