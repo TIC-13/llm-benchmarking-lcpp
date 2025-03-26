@@ -43,7 +43,7 @@ fun ModelCardBenchmarking(
                 ActionIconButton(
                     imageVector = Icons.Outlined.Download,
                     contentDescription = "start downloading",
-                    onClick = onDownload
+                    onClick = onDownload,
                 )
             }
 
@@ -59,6 +59,7 @@ fun ModelCardBenchmarking(
                 ModalActionIconButton(
                     imageVector = Icons.Outlined.Delete,
                     contentDescription = "delete model",
+                    disabled = onDelete === null,
                     modalProps = getDeleteModalProps { if(onDelete !== null) onDelete() },
                 )
             }

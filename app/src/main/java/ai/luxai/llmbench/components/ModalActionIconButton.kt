@@ -9,6 +9,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 fun ModalActionIconButton(
     imageVector: ImageVector,
     contentDescription: String,
+    disabled: Boolean = false,
     modalProps: ModalProps,
 ) {
 
@@ -17,7 +18,7 @@ fun ModalActionIconButton(
     ActionIconButton(
         imageVector = imageVector,
         contentDescription = contentDescription,
-        onClick = { modal.show(modalProps) }
+        onClick = if(!disabled) {{  modal.show(modalProps) }} else null
     )
 
 }
