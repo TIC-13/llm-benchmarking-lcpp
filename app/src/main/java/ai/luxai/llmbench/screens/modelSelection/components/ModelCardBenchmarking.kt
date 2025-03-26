@@ -3,7 +3,10 @@ package ai.luxai.llmbench.screens.modelSelection.components
 import ai.luxai.llmbench.components.ActionIconButton
 import ai.luxai.llmbench.components.CustomCheckbox
 import ai.luxai.llmbench.components.Link
+import ai.luxai.llmbench.components.ModalActionIconButton
 import ai.luxai.llmbench.components.ModelCard
+import ai.luxai.llmbench.props.modal.getCancelDownloadModalProps
+import ai.luxai.llmbench.props.modal.getDeleteModalProps
 import ai.luxai.llmbench.state.ModelDownloadStatus
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Cancel
@@ -45,18 +48,18 @@ fun ModelCardBenchmarking(
             }
 
             ModelDownloadStatus.DOWNLOADING -> {
-                ActionIconButton(
+                ModalActionIconButton(
                     imageVector = Icons.Outlined.Cancel,
                     contentDescription = "cancel download",
-                    onClick = onCancel
+                    modalProps = getCancelDownloadModalProps(onCancel),
                 )
             }
 
             ModelDownloadStatus.DOWNLOADED -> {
-                ActionIconButton(
+                ModalActionIconButton(
                     imageVector = Icons.Outlined.Delete,
                     contentDescription = "delete model",
-                    onClick = onDelete
+                    modalProps = getDeleteModalProps { if(onDelete !== null) onDelete() },
                 )
             }
 

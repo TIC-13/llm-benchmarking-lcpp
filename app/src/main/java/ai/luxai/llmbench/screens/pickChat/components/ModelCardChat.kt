@@ -10,6 +10,9 @@ import androidx.compose.material.icons.outlined.Chat
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Download
 import androidx.compose.runtime.Composable
+import ai.luxai.llmbench.components.ModalActionIconButton
+import ai.luxai.llmbench.props.modal.getCancelDownloadModalProps
+import ai.luxai.llmbench.props.modal.getDeleteModalProps
 
 @Composable
 fun ModelCardChat(
@@ -40,18 +43,18 @@ fun ModelCardChat(
                     onClick = if (canChat) onChat else null
                 )
 
-                ActionIconButton(
+                ModalActionIconButton(
                     imageVector = Icons.Outlined.Delete,
                     contentDescription = "delete model",
-                    onClick = onDelete
+                    modalProps = getDeleteModalProps(onDelete)
                 )
             }
 
             ModelDownloadStatus.DOWNLOADING -> {
-                ActionIconButton(
+                ModalActionIconButton(
                     imageVector = Icons.Outlined.Cancel,
                     contentDescription = "cancel download",
-                    onClick = onCancel
+                    modalProps = getCancelDownloadModalProps(onCancel)
                 )
             }
         }
