@@ -74,8 +74,10 @@ fun downloadModelsSequentially(
                     break
                 }
 
-                // Skip already downloaded models
-                if (model.status.value == ModelDownloadStatus.DOWNLOADED) {
+                // Skip already downloaded and not selected models
+                if (model.status.value == ModelDownloadStatus.DOWNLOADED ||
+                    !model.isCheckedForDownload.value
+                    ) {
                     completedModels++
                     withContext(Dispatchers.Main) {
                         onProgress?.invoke(completedModels.toFloat() / totalModels)
