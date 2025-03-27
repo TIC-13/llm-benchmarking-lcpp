@@ -3,12 +3,14 @@ package ai.luxai.llmbench.screens.benchmark.hooks
 import ai.luxai.llmbench.state.LLMViewModel
 import ai.luxai.llmbench.state.ModelDownloadState
 import ai.luxai.llmbench.state.ModelState
+import ai.luxai.llmbench.utils.readQuestionsFile
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -22,6 +24,13 @@ fun useBenchmarking(
 
     if(model === null)
         return
+
+    val context = LocalContext.current
+
+    val questionsFileName = "qa_dataset.txt"
+    val questions = remember {
+        readQuestionsFile(context, questionsFileName).subList(0, numMessages)
+    }
 
     val modelState = viewModel.modelState.collectAsState()
     val modelFromViewModel = viewModel.model.collectAsState()
@@ -45,7 +54,7 @@ fun useBenchmarking(
             if(messageCount.intValue >= numMessages)
                 return@LaunchedEffect
 
-            viewModel.sendUserQuery(userMessage = "Describe who you are in only one word", onFinish = {
+            viewModel.sendUserQuery(userMessage = questions[messageCount.intValue], onFinish = {
                 messageCount.intValue += 1
                 finishBenchmarkingIfDone()
             })
