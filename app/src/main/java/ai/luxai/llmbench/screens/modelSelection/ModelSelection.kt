@@ -15,6 +15,7 @@ import ai.luxai.llmbench.screens.modelSelection.hooks.useDownloadForBenchmarking
 import ai.luxai.llmbench.state.LLMViewModel
 import ai.luxai.llmbench.state.ModelDownloadStatus
 import ai.luxai.llmbench.state.ModelState
+import ai.luxai.llmbench.state.ResultViewModel
 import ai.luxai.llmbench.utils.navigateToUrl
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -45,6 +46,7 @@ import androidx.navigation.NavController
 fun ModelSelectionScreen(
     navController: NavController,
     viewModel: LLMViewModel,
+    resultViewModel: ResultViewModel
 ) {
 
     val context = LocalContext.current
@@ -60,6 +62,7 @@ fun ModelSelectionScreen(
 
     fun startBenchmark() {
         viewModel.setSelectedModelsToBenchmarking()
+        resultViewModel.resetResults()
         navController.navigate("benchmark")
     }
 

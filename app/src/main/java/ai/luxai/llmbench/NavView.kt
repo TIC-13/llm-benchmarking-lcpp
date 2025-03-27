@@ -69,7 +69,8 @@ fun NavView() {
         composable("pickBenchmarks") {
             ModelSelectionScreen(
                 navController,
-                viewModel
+                viewModel,
+                resultViewModel
             )
         }
 
