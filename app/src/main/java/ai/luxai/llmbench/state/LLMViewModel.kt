@@ -34,7 +34,8 @@ enum class Role{
 
 data class Message(
     val text: String,
-    val role: Role
+    val role: Role,
+    val toks: Float? = null
 )
 
 enum class ModelState {
@@ -136,6 +137,10 @@ class LLMViewModel(
         }
     }
 
+    private fun getToksOfLastAnswer(): Float {
+        return smolLM.getResponseGenerationSpeed()
+    }
+
     fun sendUserQuery(userMessage: String, onError: ((errorMessage: String) -> Unit)?=null, onFinish: (() -> Unit)?=null) {
 
         if(_modelState.value !== ModelState.READY)
@@ -161,6 +166,13 @@ class LLMViewModel(
                             _messages.value = _messages.value.dropLast(1).plus(Message(last.text + it, Role.APP))
                         }
                     }
+
+                    //Collect tok/s
+                    val last = _messages.value.last()
+                    _messages.value = _messages.value
+                        .dropLast(1)
+                        .plus(Message(last.text, Role.APP, getToksOfLastAnswer()))
+
                     if (onFinish != null) {
                         onFinish()
                     }

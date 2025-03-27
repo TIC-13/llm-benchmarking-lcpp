@@ -33,10 +33,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import java.util.Locale
 
 @Composable
 fun MessagesView(
@@ -121,6 +123,18 @@ fun MessageView(
                     color = MaterialTheme.colorScheme.onSecondaryContainer,
                     modifier = Modifier
                 )
+                if(message.toks !== null){
+                    Text(
+                        text = "${String.format(Locale.ENGLISH,"%.2f", message.toks)} tok/s",
+                        textAlign = TextAlign.Left,
+                        fontSize = 12.sp,
+                        fontStyle = FontStyle.Italic,
+                        fontWeight = FontWeight.Thin,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer,
+                        modifier = Modifier
+                    )
+                }
+
             }
         } else {
             Row(

@@ -33,7 +33,7 @@ data class BenchmarkResult(
     //val cpu: Measurement,
     val gpu: Measurement,
     //val prefill: Measurement,
-    //val decode: Measurement,
+    val decode: Measurement,
 )
 
 class ResultViewModel(private val llmViewModel: LLMViewModel) : ViewModel() {
@@ -43,6 +43,7 @@ class ResultViewModel(private val llmViewModel: LLMViewModel) : ViewModel() {
 
     private var gpuSampler = Sampler()
     private var ramSampler = Sampler()
+    private var decodeSampler = Sampler()
 
     private var modelName: String? = null
 
@@ -64,24 +65,34 @@ class ResultViewModel(private val llmViewModel: LLMViewModel) : ViewModel() {
 
     fun resetResults() {
         _results.value = emptyList()
-        gpuSampler = Sampler()
+        restartBenchmarkingData()
+    }
+
+    private fun restartBenchmarkingData() {
         ramSampler = Sampler()
+        gpuSampler = Sampler()
+        decodeSampler = Sampler()
         modelName = null
     }
 
     private fun addToResults(modelState: ModelState, modelNameCopy: String?) {
         if (modelState != ModelState.NOT_LOADED || modelNameCopy == null) return
 
+        //add tok/s to sampler
+        llmViewModel.messages.value.map {
+            if(it.toks !== null)
+                decodeSampler.addSample(it.toks.toDouble())
+        }
+
         add(BenchmarkResult(
             llm_model = LLMModel(name = modelNameCopy),
             ram = ramSampler.getMeasurements(),
-            gpu = gpuSampler.getMeasurements()
+            gpu = gpuSampler.getMeasurements(),
+            decode = decodeSampler.getMeasurements()
         ))
 
         // Reset samplers and model name
-        ramSampler = Sampler()
-        gpuSampler = Sampler()
-        modelName = null
+        restartBenchmarkingData()
     }
 
     private fun startSampling() {

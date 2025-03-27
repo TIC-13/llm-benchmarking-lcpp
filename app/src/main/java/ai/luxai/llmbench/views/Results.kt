@@ -159,10 +159,6 @@ fun ResultCard(
     modifier: Modifier = Modifier,
     result: BenchmarkResult,
 ) {
-
-    val prefill = null
-    val decode = null
-
     Column(
         modifier = modifier
             .fillMaxWidth(0.8F)
@@ -191,7 +187,7 @@ fun ResultCard(
 
         ResultTable(result = result)
 
-        if (prefill == null || decode == null) {
+        if (result.decode.median === null) {
             Row(
                 modifier = Modifier.padding(top = 15.dp),
                 verticalAlignment = Alignment.CenterVertically,
@@ -263,13 +259,6 @@ fun ResultTable(result: BenchmarkResult) {
         }
     }
 
-    val loadTimeResult = null
-
-    val prefillMedian = null
-    val decodeMedian = null
-
-    val toksTotal = decodeMedian
-
     LockScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
 
     Column(
@@ -278,12 +267,12 @@ fun ResultTable(result: BenchmarkResult) {
             .padding(10.dp, 0.dp, 0.dp, 0.dp),
         verticalArrangement = Arrangement.spacedBy(5.dp)
     ) {
-        if (toksTotal !== null) {
+        if (result.decode.average !== null) {
             TableRow(
                 content = listOf(
                     RowContent(""),
-                    RowContent("Tok/s", bold = true),
-                    RowContent(formatDouble(toksTotal, " tok/s")),
+                    RowContent("Tok/s average", bold = true),
+                    RowContent(formatDouble(result.decode.average, " tok/s")),
                     RowContent("")
                 )
             )
@@ -311,6 +300,14 @@ fun ResultTable(result: BenchmarkResult) {
                 RowContent(formatInt(result.ram.average, "MB")),
                 RowContent(formatInt(result.ram.std, "MB")),
                 RowContent(formatInt(result.ram.peak, "MB"))
+            )
+        )
+        TableRow(
+            content = listOf(
+                RowContent("Tok/s", bold = true),
+                RowContent(formatDouble(result.decode.average, " tok/s")),
+                RowContent(formatDouble(result.decode.std, " tok/s")),
+                RowContent(formatDouble(result.decode.peak, " tok/s"))
             )
         )
     }
