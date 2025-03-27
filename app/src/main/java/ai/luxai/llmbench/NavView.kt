@@ -8,6 +8,7 @@ import ai.luxai.llmbench.screens.licenses.LicensesScreen
 import ai.luxai.llmbench.screens.modelSelection.ModelSelectionScreen
 import ai.luxai.llmbench.screens.pickChat.PickChatScreen
 import ai.luxai.llmbench.state.LLMViewModel
+import ai.luxai.llmbench.state.ResultViewModel
 import ai.luxai.llmbench.state.loadModelsDownloadState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
@@ -27,6 +28,7 @@ fun NavView() {
     val viewModel: LLMViewModel = viewModel(
         factory = LLMViewModel.Factory(loadModelsDownloadState(context))
     )
+    val resultViewModel = ResultViewModel(viewModel)
 
     NavHost(navController = navController, startDestination = "home") {
 
@@ -58,7 +60,8 @@ fun NavView() {
         composable("chat") {
             ChatScreen(
                 navController,
-                viewModel
+                viewModel,
+                resultViewModel
             )
         }
 
@@ -72,7 +75,8 @@ fun NavView() {
         composable("benchmark") {
             BenchmarkScreen(
                 navController,
-                viewModel
+                viewModel,
+                resultViewModel
             )
         }
 

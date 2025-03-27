@@ -3,9 +3,11 @@ package ai.luxai.llmbench.screens.chat
 import ai.luxai.llmbench.components.AppBackground
 import ai.luxai.llmbench.components.AppTopBar
 import ai.luxai.llmbench.hooks.useCounter
+import ai.luxai.llmbench.screens.benchmark.BenchmarkView
 import ai.luxai.llmbench.screens.chat.components.ChatTextBox
 import ai.luxai.llmbench.state.LLMViewModel
 import ai.luxai.llmbench.state.ModelState
+import ai.luxai.llmbench.state.ResultViewModel
 import ai.luxai.llmbench.views.MessagesView
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
@@ -32,6 +34,7 @@ import kotlinx.coroutines.launch
 fun ChatScreen(
     navController: NavController,
     viewModel: LLMViewModel,
+    resultViewModel: ResultViewModel
 ) {
 
     val context = LocalContext.current
@@ -40,6 +43,9 @@ fun ChatScreen(
     val modelState by viewModel.modelState.collectAsState()
     val isThinking by viewModel.isThinking.collectAsState()
     val model by viewModel.model.collectAsState()
+
+    val gpu by resultViewModel.gpuDisplayValue.collectAsState()
+    val ram by resultViewModel.ramDisplayValue.collectAsState()
 
     val counter = useCounter(limit = 3)
 
@@ -83,6 +89,10 @@ fun ChatScreen(
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
+                BenchmarkView(
+                    gpu = gpu,
+                    ram = ram
+                )
                 MessagesView(
                     modifier = Modifier
                         .fillMaxWidth()

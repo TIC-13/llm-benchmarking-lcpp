@@ -132,8 +132,7 @@ class LLMViewModel(
 
     fun setSelectedModelsToBenchmarking() {
         for (model in _modelsDownloadState.value) {
-            if(model.isCheckedForDownload.value)
-                model.selectedToBenchmarking.value = true
+            model.selectedToBenchmarking.value = model.isCheckedForDownload.value
         }
     }
 
