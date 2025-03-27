@@ -45,7 +45,7 @@ fun useBenchmarking(
             if(messageCount.intValue >= numMessages)
                 return@LaunchedEffect
 
-            viewModel.sendUserQuery(userMessage = "Who you are", onFinish = {
+            viewModel.sendUserQuery(userMessage = "Describe who you are in only one word", onFinish = {
                 messageCount.intValue += 1
                 finishBenchmarkingIfDone()
             })

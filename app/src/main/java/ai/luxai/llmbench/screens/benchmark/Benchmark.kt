@@ -56,7 +56,7 @@ fun BenchmarkScreen(
 
     LaunchedEffect(benchmarkModel) {
         if(benchmarkModel == null)
-            navController.popBackStack()
+            navController.navigate("results")
     }
 
     Scaffold(topBar = {
