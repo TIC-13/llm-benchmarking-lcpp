@@ -8,6 +8,7 @@ import ai.luxai.llmbench.hooks.useModal
 import ai.luxai.llmbench.screens.pickChat.components.ModelCardChat
 import ai.luxai.llmbench.state.LLMViewModel
 import ai.luxai.llmbench.state.ModelState
+import ai.luxai.llmbench.state.ResultViewModel
 import ai.luxai.llmbench.utils.navigateToUrl
 import android.widget.Toast
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -38,6 +39,7 @@ import kotlinx.coroutines.launch
 fun PickChatScreen(
     navController: NavController,
     viewModel: LLMViewModel,
+    resultViewModel: ResultViewModel
 ) {
 
     val context = LocalContext.current
@@ -96,6 +98,7 @@ fun PickChatScreen(
                             status = item.status.value,
                             downloadProgress = item.progress.value,
                             onChat = {
+                                resultViewModel.resetResults()
                                 CoroutineScope(Dispatchers.Default).launch {
                                     viewModel.setModel(
                                         item,

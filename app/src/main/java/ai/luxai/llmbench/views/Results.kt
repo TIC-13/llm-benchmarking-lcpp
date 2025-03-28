@@ -55,7 +55,7 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun ResultView(
     title: String,
-    onBack: () -> Unit,
+    onBack: (() -> Unit)?,
     onContinue: () -> Unit,
     continueLabel: String,
     results: List<BenchmarkResult>
@@ -68,7 +68,7 @@ fun ResultView(
     Scaffold(topBar = {
         AppTopBar(
             title = title,
-            onBack = { onBack() }
+            onBack = onBack
         )
     }, modifier = Modifier.pointerInput(Unit) {
         detectTapGestures(onTap = {

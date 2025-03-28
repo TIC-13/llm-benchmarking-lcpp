@@ -2,7 +2,10 @@ package ai.luxai.llmbench.screens.chat
 
 import ai.luxai.llmbench.components.AppBackground
 import ai.luxai.llmbench.components.AppTopBar
+import ai.luxai.llmbench.hooks.ModalButtonProps
+import ai.luxai.llmbench.hooks.ModalProps
 import ai.luxai.llmbench.hooks.useCounter
+import ai.luxai.llmbench.hooks.useModal
 import ai.luxai.llmbench.screens.benchmark.BenchmarkView
 import ai.luxai.llmbench.screens.chat.components.ChatTextBox
 import ai.luxai.llmbench.state.LLMViewModel
@@ -17,6 +20,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.Replay
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -54,6 +58,8 @@ fun ChatScreen(
     val ram by resultViewModel.ramDisplayValue.collectAsState()
 
     val counter = useCounter(limit = 3)
+
+    val modal = useModal()
 
     val isLoading = modelState === ModelState.LOADING
     val canReload = modelState === ModelState.READY
@@ -107,6 +113,24 @@ fun ChatScreen(
                         imageVector = Icons.Filled.Replay,
                         contentDescription = "reset the chat",
                         tint = if(canReload) MaterialTheme.colorScheme.onPrimary else Color.Gray
+                    )
+                }
+                IconButton(
+                    onClick = {
+                        modal.show(ModalProps(
+                            title = "Close chat and show results",
+                            text = "Do you wish to close the chat and show the benchmarking results of this conversation?",
+                            confirmProps = ModalButtonProps(
+                                label = "Continue",
+                                action = { navController.navigate("chat-results") }
+                            )
+                        ))
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.BarChart,
+                        contentDescription = "go to results",
+                        tint = MaterialTheme.colorScheme.onPrimary
                     )
                 }
             }

@@ -3,6 +3,7 @@ package ai.luxai.llmbench
 import ai.luxai.llmbench.screens.about.AboutScreen
 import ai.luxai.llmbench.screens.benchmark.BenchmarkScreen
 import ai.luxai.llmbench.screens.chat.ChatScreen
+import ai.luxai.llmbench.screens.chatResult.ChatResultScreen
 import ai.luxai.llmbench.screens.home.HomeScreen
 import ai.luxai.llmbench.screens.licenses.LicensesScreen
 import ai.luxai.llmbench.screens.modelSelection.ModelSelectionScreen
@@ -55,7 +56,8 @@ fun NavView() {
         composable("pick-chat") {
             PickChatScreen(
                 navController,
-                viewModel
+                viewModel,
+                resultViewModel
             )
         }
 
@@ -93,6 +95,13 @@ fun NavView() {
         composable("saved-results") {
             SavedResultsScreen(
                 navController
+            )
+        }
+
+        composable("chat-results") {
+            ChatResultScreen(
+                navController,
+                resultViewModel
             )
         }
 
