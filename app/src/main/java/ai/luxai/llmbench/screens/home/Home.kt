@@ -8,7 +8,6 @@ import ai.luxai.llmbench.screens.home.components.HomeScreenButton
 import ai.luxai.llmbench.screens.home.components.PainterIcon
 import ai.luxai.llmbench.screens.home.components.TitleView
 import ai.luxai.llmbench.screens.home.components.VectorIcon
-import ai.luxai.llmbench.screens.home.hooks.useStartConversation
 import ai.luxai.llmbench.utils.navigateToUrl
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -40,10 +39,6 @@ fun HomeScreen(
 
     val runWithDelayAfter = useRunWithDelayAfter()
     val rankingAddress = useRankingAddress()
-
-    val (startConversation) = useStartConversation {
-        navController.navigate("pick-chat")
-    }
 
     Column(
         modifier = Modifier
@@ -90,7 +85,7 @@ fun HomeScreen(
 
                     HomeScreenButton(
                         icon = VectorIcon(Icons.AutoMirrored.Filled.Chat),
-                        onClick = { runWithDelayAfter { startConversation() } },
+                        onClick = { runWithDelayAfter { navController.navigate("pick-chat") } },
                         text = "Chat with LLMs"
                     )
 
