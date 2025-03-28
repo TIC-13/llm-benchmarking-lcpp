@@ -77,7 +77,7 @@ fun HomeScreen(
 
                     HomeScreenButton(
                         icon = VectorIcon(Icons.Default.BarChart),
-                        onClick = { runWithDelayAfter { navController.navigate("pickBenchmarks") }},
+                        onClick = { runWithDelayAfter { navController.navigate("pick-benchmarks") }},
                         text = "Start benchmarking"
                     )
 
@@ -93,7 +93,7 @@ fun HomeScreen(
 
                     HomeScreenButton(
                         icon = VectorIcon(Icons.Default.MoreTime),
-                        onClick = { runWithDelayAfter { } },
+                        onClick = { runWithDelayAfter { navController.navigate("saved-results")} },
                         text = "Last results"
                     )
                     if (rankingAddress.isValid) {

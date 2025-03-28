@@ -5,6 +5,7 @@ import ai.luxai.llmbench.components.AppTopBar
 import ai.luxai.llmbench.screens.benchmark.hooks.useBenchmarking
 import ai.luxai.llmbench.state.LLMViewModel
 import ai.luxai.llmbench.state.ResultViewModel
+import ai.luxai.llmbench.stores.saveResult
 import ai.luxai.llmbench.views.MessagesView
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -34,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
 @Composable
@@ -42,6 +44,8 @@ fun BenchmarkScreen(
     viewModel: LLMViewModel,
     resultViewModel: ResultViewModel
 ) {
+
+    val context = LocalContext.current
 
     val messages by viewModel.messages.collectAsState()
     val isThinking by viewModel.isThinking.collectAsState()
@@ -52,11 +56,18 @@ fun BenchmarkScreen(
     val gpu by resultViewModel.gpuDisplayValue.collectAsState()
     val ram by resultViewModel.ramDisplayValue.collectAsState()
 
+    val results by resultViewModel.results.collectAsState()
+
     useBenchmarking(model = benchmarkModel, viewModel = viewModel)
 
     LaunchedEffect(benchmarkModel) {
-        if(benchmarkModel == null)
+        if(benchmarkModel == null){
+            //saves benchmarking results
+            results.map { result -> saveResult(context, result) }
+            //navigates to result screen
             navController.navigate("results")
+        }
+
     }
 
     Scaffold(topBar = {
