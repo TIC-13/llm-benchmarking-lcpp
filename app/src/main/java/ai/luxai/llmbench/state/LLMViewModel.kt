@@ -95,7 +95,7 @@ class LLMViewModel(
             onFinishLoading()
     }
 
-    private suspend fun loadModel(clearMessages: Boolean = true) {
+    suspend fun loadModel(clearMessages: Boolean = true) {
 
         val pickedModel = _model.value ?: throw Exception("No model has been setted")
 

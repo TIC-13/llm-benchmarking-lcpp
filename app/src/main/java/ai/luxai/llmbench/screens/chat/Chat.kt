@@ -16,12 +16,18 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Replay
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -50,9 +56,15 @@ fun ChatScreen(
     val counter = useCounter(limit = 3)
 
     val isLoading = modelState === ModelState.LOADING
+    val canReload = modelState === ModelState.READY
 
     fun sendStopToast() {
         val toast = Toast.makeText(context, "Stopping text generation, please wait...", Toast.LENGTH_LONG)
+        toast.show()
+    }
+
+    fun sendReloadToast() {
+        val toast = Toast.makeText(context, "Reloading model...", Toast.LENGTH_LONG)
         toast.show()
     }
 
@@ -80,6 +92,23 @@ fun ChatScreen(
                     "Chat",
             onBack = {
                 navController.popBackStack()
+            },
+            actions = {
+                IconButton(
+                    enabled = canReload,
+                    onClick = {
+                        sendReloadToast()
+                        CoroutineScope(Dispatchers.Default).launch {
+                            viewModel.loadModel()
+                        }
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Replay,
+                        contentDescription = "reset the chat",
+                        tint = if(canReload) MaterialTheme.colorScheme.onPrimary else Color.Gray
+                    )
+                }
             }
         )
     }) { paddingValues ->
