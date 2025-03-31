@@ -32,11 +32,13 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -69,7 +71,6 @@ fun ModelSelectionScreen(
     val (downloadState, cancelDownloads, startDownloads) = useDownloadForBenchmarking(
         modelsDownloadState
     ) {
-
         startBenchmark()
     }
 
@@ -184,6 +185,12 @@ fun BottomButton(
 ) {
     Button(
         onClick = { onClick() },
+        colors = ButtonColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            disabledContentColor = Color.Gray,
+            disabledContainerColor = Color.White
+        ),
         enabled = enabled
     ){
         IconForButton(imageVector)

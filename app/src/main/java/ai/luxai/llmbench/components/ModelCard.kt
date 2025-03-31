@@ -42,7 +42,7 @@ fun ModelCard(
         modifier = Modifier
             .wrapContentHeight()
             .defaultMinSize(0.dp, 60.dp)
-            .clip(RoundedCornerShape(15.dp))
+            .clip(RoundedCornerShape(10.dp))
             .background(color = MaterialTheme.colorScheme.primary)
             .padding(top = 15.dp, start = 15.dp, end = 15.dp, bottom = 15.dp)
     ) {
