@@ -34,6 +34,8 @@ data class BenchmarkResult(
     val gpu: Measurement,
     //val prefill: Measurement,
     val decode: Measurement,
+
+    val prefillTime: Measurement
 )
 
 class ResultViewModel(private val llmViewModel: LLMViewModel) : ViewModel() {
@@ -44,6 +46,7 @@ class ResultViewModel(private val llmViewModel: LLMViewModel) : ViewModel() {
     private var gpuSampler = Sampler()
     private var ramSampler = Sampler()
     private var decodeSampler = Sampler()
+    private var prefillTimeSampler = Sampler()
 
     private var modelName: String? = null
 
@@ -72,23 +75,28 @@ class ResultViewModel(private val llmViewModel: LLMViewModel) : ViewModel() {
         ramSampler = Sampler()
         gpuSampler = Sampler()
         decodeSampler = Sampler()
+        prefillTimeSampler = Sampler()
         modelName = null
     }
 
     private fun addToResults(modelState: ModelState, modelNameCopy: String?) {
         if (modelState != ModelState.NOT_LOADED || modelNameCopy == null) return
 
-        //add tok/s to sampler
+        //add tok/s and prefill times to sampler
         llmViewModel.messages.value.map {
             if(it.toks !== null)
                 decodeSampler.addSample(it.toks.toDouble())
+
+            if(it.prefillTime !== null)
+                prefillTimeSampler.addSample(it.prefillTime.toDouble())
         }
 
         add(BenchmarkResult(
             llm_model = LLMModel(name = modelNameCopy),
             ram = ramSampler.getMeasurements(),
             gpu = gpuSampler.getMeasurements(),
-            decode = decodeSampler.getMeasurements()
+            decode = decodeSampler.getMeasurements(),
+            prefillTime = prefillTimeSampler.getMeasurements()
         ))
 
         // Reset samplers and model name

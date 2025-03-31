@@ -112,6 +112,9 @@ fun MessageView(
     modifier: Modifier = Modifier,
     message: Message
 ) {
+
+    val secondsThinking = if(message.prefillTime !== null) message.prefillTime/1000F else null
+
     SelectionContainer {
         if (message.role === Role.APP) {
             AppMessageContainer {
@@ -123,18 +126,12 @@ fun MessageView(
                     color = MaterialTheme.colorScheme.onSecondaryContainer,
                     modifier = Modifier
                 )
-                if(message.toks !== null){
-                    Text(
-                        text = "${String.format(Locale.ENGLISH,"%.2f", message.toks)} tok/s",
-                        textAlign = TextAlign.Left,
-                        fontSize = 12.sp,
-                        fontStyle = FontStyle.Italic,
-                        fontWeight = FontWeight.Thin,
-                        color = MaterialTheme.colorScheme.onSecondaryContainer,
-                        modifier = Modifier
-                    )
+                if (secondsThinking !== null) {
+                    MessageViewSubtext("Spent ${String.format(Locale.ENGLISH, "%.1f", secondsThinking.toFloat())}s thinking")
                 }
-
+                if (message.toks !== null) {
+                    MessageViewSubtext("${String.format(Locale.ENGLISH, "%.2f", message.toks)} tok/s")
+                }
             }
         } else {
             Row(
@@ -179,4 +176,18 @@ fun AppMessageContainer(
     ) {
         children()
     }
+}
+
+@Composable fun MessageViewSubtext(
+    text: String
+) {
+    Text(
+        text = text,
+        textAlign = TextAlign.Left,
+        fontSize = 12.sp,
+        fontStyle = FontStyle.Italic,
+        fontWeight = FontWeight.Thin,
+        color = MaterialTheme.colorScheme.onSecondaryContainer,
+        modifier = Modifier
+    )
 }

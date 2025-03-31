@@ -13,14 +13,12 @@ import ai.luxai.llmbench.state.BenchmarkResult
 import ai.luxai.llmbench.utils.navigateToUrl
 import android.content.pm.ActivityInfo
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -308,6 +306,14 @@ fun ResultTable(result: BenchmarkResult) {
                 RowContent(formatDouble(result.decode.average, " tok/s")),
                 RowContent(formatDouble(result.decode.std, " tok/s")),
                 RowContent(formatDouble(result.decode.peak, " tok/s"))
+            )
+        )
+        TableRow(
+            content = listOf(
+                RowContent("Prefill time", bold = true),
+                RowContent(formatDouble(result.prefillTime.average?.div(1000F), " s")),
+                RowContent(formatDouble(result.prefillTime.std?.div(1000F), " s")),
+                RowContent(formatDouble(result.prefillTime.peak?.div(1000F), " s"))
             )
         )
     }

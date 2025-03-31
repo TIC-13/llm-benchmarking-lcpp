@@ -36,7 +36,8 @@ enum class Role{
 data class Message(
     val text: String,
     val role: Role,
-    val toks: Float? = null
+    val toks: Float? = null,
+    val prefillTime: Long? = null,
 )
 
 enum class ModelState {
@@ -154,25 +155,32 @@ class LLMViewModel(
 
         _modelState.value = ModelState.ANSWERING
         _isThinking.value = true
+        val startThinkingTime = System.currentTimeMillis()
 
         responseGenerationJob =
             CoroutineScope(Dispatchers.Default).launch {
                 try {
                     smolLM.getResponse(userMessage).collect {
-                        _isThinking.value = false
                         val last = _messages.value.last()
+                        _isThinking.value = false
                         if(last.role === Role.USER){
-                            _messages.value = _messages.value.plus(Message(it, Role.APP))
+                            _messages.value = _messages.value.plus(
+                                Message(it, Role.APP, prefillTime = System.currentTimeMillis() - startThinkingTime)
+                            )
                         }else{
-                            _messages.value = _messages.value.dropLast(1).plus(Message(last.text + it, Role.APP))
+                            setLastMessage { lastMessage ->
+                                Message(
+                                    text = lastMessage.text + it,
+                                    role = Role.APP,
+                                    prefillTime = lastMessage.prefillTime
+                                )
+                            }
                         }
                     }
 
-                    //Collect tok/s
-                    val last = _messages.value.last()
-                    _messages.value = _messages.value
-                        .dropLast(1)
-                        .plus(Message(last.text, Role.APP, getToksOfLastAnswer()))
+                    setLastMessage {
+                        Message(it.text, Role.APP, getToksOfLastAnswer(), it.prefillTime)
+                    }
 
                     if (onFinish != null) {
                         onFinish()
@@ -189,6 +197,14 @@ class LLMViewModel(
                     onCompletionJobEnded()
                 }
             }
+    }
+
+    private fun setLastMessage(action: (last: Message) -> Message) {
+        val last = _messages.value.last()
+
+        _messages.value = _messages.value
+            .dropLast(1)
+            .plus(action(last))
     }
 
     private fun onCompletionJobEnded() {
