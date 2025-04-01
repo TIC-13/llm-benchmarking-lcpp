@@ -114,7 +114,7 @@ fun BenchmarkView(
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically,
     ){
-        Text(text = "GPU: ${if(gpu !== null) "${gpu}%" else "-"}", color = textColor, fontWeight = fontWeight, style = style)
+        //Text(text = "GPU: ${if(gpu !== null) "${gpu}%" else "-"}", color = textColor, fontWeight = fontWeight, style = style)
         Text(text = "RAM: ${if(ram !== null) "${ram.toInt()}MB" else "-"}", color = textColor, fontWeight = fontWeight, style = style)
     }
 }

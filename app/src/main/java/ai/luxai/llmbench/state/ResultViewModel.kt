@@ -27,7 +27,7 @@ data class BenchmarkResult(
     //val load_time: Int?,
     val ram: Measurement,
     //val cpu: Measurement,
-    val gpu: Measurement,
+    var gpu: Measurement?,
     val prefill: Measurement,
     val decode: Measurement,
 )

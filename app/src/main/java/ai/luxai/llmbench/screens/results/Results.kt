@@ -27,6 +27,7 @@ fun ResultsScreen(
         val phone = getPhoneData(context)
         results.map {
             it.phone = phone
+            it.gpu = null
             encryptAndPostResult(it)
         }
     }

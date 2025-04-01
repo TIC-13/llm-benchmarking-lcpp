@@ -284,6 +284,7 @@ fun ResultTable(result: BenchmarkResult) {
                 RowContent("Peak", bold = true)
             )
         )
+        /**
         TableRow(
             content = listOf(
                 RowContent("GPU", bold = true),
@@ -292,6 +293,7 @@ fun ResultTable(result: BenchmarkResult) {
                 RowContent(formatInt(result.gpu.peak, "%"))
             )
         )
+        **/
         TableRow(
             content = listOf(
                 RowContent("RAM", bold = true),
