@@ -311,9 +311,9 @@ fun ResultTable(result: BenchmarkResult) {
         TableRow(
             content = listOf(
                 RowContent("Prefill time", bold = true),
-                RowContent(formatDouble(result.prefillTime.average?.div(1000F), " s")),
-                RowContent(formatDouble(result.prefillTime.std?.div(1000F), " s")),
-                RowContent(formatDouble(result.prefillTime.peak?.div(1000F), " s"))
+                RowContent(formatDouble(result.prefill.average?.div(1000F), " s")),
+                RowContent(formatDouble(result.prefill.std?.div(1000F), " s")),
+                RowContent(formatDouble(result.prefill.peak?.div(1000F), " s"))
             )
         )
     }

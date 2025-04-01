@@ -13,6 +13,7 @@ import ai.luxai.llmbench.screens.savedResults.SavedResultsScreen
 import ai.luxai.llmbench.state.LLMViewModel
 import ai.luxai.llmbench.state.ResultViewModel
 import ai.luxai.llmbench.state.loadModelsDownloadState
+import ai.luxai.llmbench.utils.getPhoneData
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext

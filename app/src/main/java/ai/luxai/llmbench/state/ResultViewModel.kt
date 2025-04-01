@@ -1,9 +1,12 @@
 package ai.luxai.llmbench.state
 
+import ai.luxai.llmbench.api.encryptAndPostResult
 import ai.luxai.llmbench.utils.Measurement
+import ai.luxai.llmbench.utils.Phone
 import ai.luxai.llmbench.utils.Sampler
 import ai.luxai.llmbench.utils.benchmark.gpuUsage
 import ai.luxai.llmbench.utils.benchmark.ramUsage
+import ai.luxai.llmbench.utils.getPhoneData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -14,31 +17,24 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-data class Phone(
-    val brand_name: String,
-    val manufacturer: String,
-    val phone_model: String,
-    val total_ram: Int
-)
-
 data class LLMModel(
     val name: String
 )
 
 data class BenchmarkResult(
-    //val phone: Phone,
+    var phone: Phone? = null,
     val llm_model: LLMModel,
     //val load_time: Int?,
     val ram: Measurement,
     //val cpu: Measurement,
     val gpu: Measurement,
-    //val prefill: Measurement,
+    val prefill: Measurement,
     val decode: Measurement,
-
-    val prefillTime: Measurement
 )
 
-class ResultViewModel(private val llmViewModel: LLMViewModel) : ViewModel() {
+class ResultViewModel(
+    private val llmViewModel: LLMViewModel
+) : ViewModel() {
 
     private val _results = MutableStateFlow(emptyList<BenchmarkResult>())
     val results: StateFlow<List<BenchmarkResult>> = _results.asStateFlow()
@@ -91,13 +87,15 @@ class ResultViewModel(private val llmViewModel: LLMViewModel) : ViewModel() {
                 prefillTimeSampler.addSample(it.prefillTime.toDouble())
         }
 
-        add(BenchmarkResult(
+        val result = BenchmarkResult(
             llm_model = LLMModel(name = modelNameCopy),
             ram = ramSampler.getMeasurements(),
             gpu = gpuSampler.getMeasurements(),
             decode = decodeSampler.getMeasurements(),
-            prefillTime = prefillTimeSampler.getMeasurements()
-        ))
+            prefill = prefillTimeSampler.getMeasurements()
+        )
+
+        add(result)
 
         // Reset samplers and model name
         restartBenchmarkingData()

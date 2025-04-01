@@ -12,7 +12,9 @@ if (localPropertiesFile.exists()) {
     localProperties.load(localPropertiesFile.inputStream())
 }
 
-val rankingAddress: String = localProperties.getProperty("RANKING_ADDRESS", "https://default-url.com")
+val rankingAddress: String = localProperties.getProperty("RANKING_ADDRESS")
+val apiAddress: String = localProperties.getProperty("API_ADDRESS")
+val apiKey: String = localProperties.getProperty("API_KEY")
 
 android {
     namespace = "ai.luxai.llmbench"
@@ -26,6 +28,10 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "RANKING_ADDRESS", "\"$rankingAddress\"")
+        buildConfigField("String", "API_ADRESS", "\"${apiAddress}\"")
+        buildConfigField("String", "API_KEY", "\"${apiKey}\"")
     }
 
     buildTypes {
@@ -35,10 +41,6 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            buildConfigField("String", "RANKING_ADDRESS", "\"$rankingAddress\"")
-        }
-        debug {
-            buildConfigField("String", "RANKING_ADDRESS", "\"$rankingAddress\"")
         }
     }
 
@@ -74,6 +76,8 @@ dependencies {
     implementation(libs.generativeai)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.leanback)
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
     implementation(libs.androidx.datastore.preferences)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
