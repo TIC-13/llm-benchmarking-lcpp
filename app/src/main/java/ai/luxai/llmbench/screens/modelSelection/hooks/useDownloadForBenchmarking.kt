@@ -1,5 +1,7 @@
 package ai.luxai.llmbench.screens.modelSelection.hooks
 
+import ai.luxai.llmbench.hooks.ModalProps
+import ai.luxai.llmbench.hooks.useModal
 import ai.luxai.llmbench.state.DownloadController
 import ai.luxai.llmbench.state.ModelDownloadState
 import ai.luxai.llmbench.state.ModelDownloadStatus
@@ -83,6 +85,12 @@ fun useDownloadForBenchmarking(
         }
     }
 
+    val modal = useModal()
+
+    fun showDownloadFailedModal() {
+        modal.show(ModalProps(title = "Download failed", text = "Failed downloading some models"))
+    }
+
     LaunchedEffect(
         modelsDownloadState.map { it.isCheckedForDownload.value },
         modelsDownloadState.map { it.status.value }
@@ -104,9 +112,16 @@ fun useDownloadForBenchmarking(
         downloadController = downloadModelsSequentially(
             models = modelsDownloadState,
             onComplete = {
-                println("All models downloaded")
-                downloadState = DownloadForBenchmarkingState.FINISHED
-                onFinish()
+                if(modelsDownloadState
+                    .filter { it.isCheckedForDownload.value }
+                    .all { it.status.value == ModelDownloadStatus.DOWNLOADED }
+                    ){
+                    println("All models downloaded")
+                    downloadState = DownloadForBenchmarkingState.FINISHED
+                    onFinish()
+                }else{
+                    showDownloadFailedModal()
+                }
             },
             onError = { failedModel, exception ->
                 println("Download failed for ${failedModel.modelName}: ${exception?.message}")

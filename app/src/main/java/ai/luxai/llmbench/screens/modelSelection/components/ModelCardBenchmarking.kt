@@ -31,6 +31,17 @@ fun ModelCardBenchmarking(
     onDelete: (() -> Unit)?,
     checkbox: CheckboxData,
 ) {
+
+    @Composable
+    fun StartDownloadActionIcon() {
+        ActionIconButton(
+            imageVector = Icons.Outlined.Download,
+            contentDescription = "start downloading",
+            onClick = onDownload,
+        )
+    }
+
+
     ModelCard(name, link, downloadProgress) {
         CustomCheckbox(
             checked = checkbox.isChecked,
@@ -40,11 +51,7 @@ fun ModelCardBenchmarking(
 
         when (status) {
             ModelDownloadStatus.NO_DOWNLOAD_STARTED -> {
-                ActionIconButton(
-                    imageVector = Icons.Outlined.Download,
-                    contentDescription = "start downloading",
-                    onClick = onDownload,
-                )
+                StartDownloadActionIcon()
             }
 
             ModelDownloadStatus.DOWNLOADED -> {
@@ -54,6 +61,10 @@ fun ModelCardBenchmarking(
                     disabled = onDelete === null,
                     modalProps = getDeleteModalProps { if(onDelete !== null) onDelete() },
                 )
+            }
+
+            ModelDownloadStatus.FAILED -> {
+                StartDownloadActionIcon()
             }
 
             else ->

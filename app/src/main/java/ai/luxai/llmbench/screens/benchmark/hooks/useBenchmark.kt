@@ -1,9 +1,11 @@
 package ai.luxai.llmbench.screens.benchmark.hooks
 
+import ai.luxai.llmbench.hooks.useModal
 import ai.luxai.llmbench.state.LLMViewModel
 import ai.luxai.llmbench.state.ModelDownloadState
 import ai.luxai.llmbench.state.ModelState
 import ai.luxai.llmbench.utils.readQuestionsFile
+import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -42,6 +44,11 @@ fun useBenchmarking(
         }
     }
 
+    fun sendErrorToast(errorMessage: String) {
+        val toast = Toast.makeText(context, "Error: $errorMessage", Toast.LENGTH_SHORT)
+        toast.show()
+    }
+
     //unload previous model and load new
     LaunchedEffect(model) {
         viewModel.unload()
@@ -54,10 +61,16 @@ fun useBenchmarking(
             if(messageCount.intValue >= numMessages)
                 return@LaunchedEffect
 
-            viewModel.sendUserQuery(userMessage = questions[messageCount.intValue], onFinish = {
-                messageCount.intValue += 1
-                finishBenchmarkingIfDone()
-            })
+            viewModel.sendUserQuery(
+                userMessage = questions[messageCount.intValue],
+                onFinish = {
+                    messageCount.intValue += 1
+                    finishBenchmarkingIfDone()
+                },
+                onError = {
+                    sendErrorToast(it)
+                }
+            )
         }
     }
 
