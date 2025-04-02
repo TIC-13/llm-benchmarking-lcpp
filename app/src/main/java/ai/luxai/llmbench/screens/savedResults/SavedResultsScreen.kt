@@ -19,11 +19,17 @@ fun SavedResultsScreen(
         navController.popBackStack()
     }
 
+    fun toBenchmarking() {
+        navController.navigate("pick-benchmarks")
+    }
+
+    val isEmpty = results.value.isEmpty()
+
     ResultView(
         title = "Result",
         onBack = { onBack() },
-        onContinue = { onBack() },
-        continueLabel = "Continue",
+        onContinue = { if(isEmpty) toBenchmarking() else onBack() },
+        continueLabel = if(isEmpty) "Start benchmarking" else "Continue",
         results = results.value
     )
 }
