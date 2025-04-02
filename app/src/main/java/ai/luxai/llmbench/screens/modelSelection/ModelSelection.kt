@@ -90,7 +90,7 @@ fun ModelSelectionScreen(
             if (downloadState == DownloadForBenchmarkingState.PROGRESS)
                 "${" ".repeat(counter)}Downloading${".".repeat(counter)}"
             else
-                "Pick your models",
+                "Select model to benchmark",
             onBack = {
                 cancelDownloads()
                 navController.popBackStack()
@@ -152,7 +152,7 @@ fun ModelSelectionScreen(
                                 DownloadForBenchmarkingState.NOT_STARTED ->
                                     BottomButton(
                                         imageVector = Icons.Default.Download,
-                                        label = "Start download for benchmarking",
+                                        label = "Start download and benchmarking",
                                         onClick = { startDownloads() }
                                     )
 
