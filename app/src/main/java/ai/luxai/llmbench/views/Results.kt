@@ -114,7 +114,7 @@ fun ResultView(
                         titleContent = { AccordionTitle(text = "What is prefill?") }
                     ) {
                         AccordionText(
-                            text = "Prefill tok/s measures how many tokens the model can process per second during the initial setup phase."
+                            text = "Time required for the LLM to process the user's input and start generating a response."
                         )
                     }
                     AccordionItem(
@@ -122,13 +122,6 @@ fun ResultView(
                     ) {
                         AccordionText(
                             text = "Decode tok/s measures how many tokens the model can generate per second during the decoding phase."
-                        )
-                    }
-                    AccordionItem(
-                        titleContent = { AccordionTitle(text = "Why can't the tok/s values be measured?") }
-                    ) {
-                        AccordionText(
-                            text = "When the response takes too long, the app assumes that the model is broken or has entered a loop and interrupts the response. In that case, the tok/s values are not measured."
                         )
                     }
                     AccordionText(text = "STD = Standard Deviation")
@@ -265,22 +258,6 @@ fun ResultTable(result: BenchmarkResult) {
             .padding(10.dp, 0.dp, 0.dp, 0.dp),
         verticalArrangement = Arrangement.spacedBy(5.dp)
     ) {
-        if (result.decode?.average !== null) {
-            TableRow(
-                content = listOf(
-                    RowContent(
-                        "Decoder Tok/s",
-                        bold = true,
-                        textAlign = TextAlign.Center
-                    ),
-                    RowContent(
-                        formatDouble(result.decode.average, " tok/s"),
-                        bold = true,
-                        textAlign = TextAlign.Center
-                    ),
-                )
-            )
-        }
 
         if(result.prefill?.sum !== null) {
             TableRow(
@@ -292,6 +269,23 @@ fun ResultTable(result: BenchmarkResult) {
                     ),
                     RowContent(
                         formatDouble(result.prefill.sum/1000F, "s"),
+                        bold = true,
+                        textAlign = TextAlign.Center
+                    ),
+                )
+            )
+        }
+
+        if (result.decode?.average !== null) {
+            TableRow(
+                content = listOf(
+                    RowContent(
+                        "Decoder Tok/s",
+                        bold = true,
+                        textAlign = TextAlign.Center
+                    ),
+                    RowContent(
+                        formatDouble(result.decode.average, " tok/s"),
                         bold = true,
                         textAlign = TextAlign.Center
                     ),
