@@ -72,7 +72,8 @@ class Sampler {
             average = this.average(),
             peak = this.peak(),
             std = this.std(),
-            median = this.median()
+            median = this.median(),
+            sum = this.sum()
         )
     }
 }
@@ -82,4 +83,5 @@ data class Measurement(
     val median: Double?,
     val peak: Double?,
     val std: Double?,
+    val sum: Double?,
 )

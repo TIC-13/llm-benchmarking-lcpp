@@ -268,13 +268,37 @@ fun ResultTable(result: BenchmarkResult) {
         if (result.decode.average !== null) {
             TableRow(
                 content = listOf(
-                    RowContent(""),
-                    RowContent("Tok/s average", bold = true),
-                    RowContent(formatDouble(result.decode.average, " tok/s")),
-                    RowContent("")
+                    RowContent(
+                        "Decoder Tok/s",
+                        bold = true,
+                        textAlign = TextAlign.Center
+                    ),
+                    RowContent(
+                        formatDouble(result.decode.average, " tok/s"),
+                        bold = true,
+                        textAlign = TextAlign.Center
+                    ),
                 )
             )
         }
+
+        if(result.prefill.sum !== null) {
+            TableRow(
+                content = listOf(
+                    RowContent(
+                        "Prefill time sum",
+                        bold = true,
+                        textAlign = TextAlign.Center
+                    ),
+                    RowContent(
+                        formatDouble(result.prefill.sum/1000F, "s"),
+                        bold = true,
+                        textAlign = TextAlign.Center
+                    ),
+                )
+            )
+        }
+
         Spacer(modifier = Modifier.height(15.dp))
         TableRow(
             content = listOf(
@@ -296,28 +320,22 @@ fun ResultTable(result: BenchmarkResult) {
         **/
         TableRow(
             content = listOf(
-                RowContent("RAM", bold = true),
-                RowContent(formatInt(result.ram.average, "MB")),
-                RowContent(formatInt(result.ram.std, "MB")),
-                RowContent(formatInt(result.ram.peak, "MB"))
-            )
-        )
-        TableRow(
-            content = listOf(
                 RowContent("Tok/s", bold = true),
                 RowContent(formatDouble(result.decode.average, " tok/s")),
                 RowContent(formatDouble(result.decode.std, " tok/s")),
                 RowContent(formatDouble(result.decode.peak, " tok/s"))
             )
         )
+
         TableRow(
             content = listOf(
-                RowContent("Prefill time", bold = true),
-                RowContent(formatDouble(result.prefill.average?.div(1000F), " s")),
-                RowContent(formatDouble(result.prefill.std?.div(1000F), " s")),
-                RowContent(formatDouble(result.prefill.peak?.div(1000F), " s"))
+                RowContent("RAM", bold = true),
+                RowContent(formatInt(result.ram.average, "MB")),
+                RowContent(formatInt(result.ram.std, "MB")),
+                RowContent(formatInt(result.ram.peak, "MB"))
             )
         )
+
     }
 }
 
