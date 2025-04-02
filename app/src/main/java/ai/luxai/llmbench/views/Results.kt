@@ -265,7 +265,7 @@ fun ResultTable(result: BenchmarkResult) {
             .padding(10.dp, 0.dp, 0.dp, 0.dp),
         verticalArrangement = Arrangement.spacedBy(5.dp)
     ) {
-        if (result.decode.average !== null) {
+        if (result.decode?.average !== null) {
             TableRow(
                 content = listOf(
                     RowContent(
@@ -282,7 +282,7 @@ fun ResultTable(result: BenchmarkResult) {
             )
         }
 
-        if(result.prefill.sum !== null) {
+        if(result.prefill?.sum !== null) {
             TableRow(
                 content = listOf(
                     RowContent(
@@ -321,18 +321,18 @@ fun ResultTable(result: BenchmarkResult) {
         TableRow(
             content = listOf(
                 RowContent("Tok/s", bold = true),
-                RowContent(formatDouble(result.decode.average, " tok/s")),
-                RowContent(formatDouble(result.decode.std, " tok/s")),
-                RowContent(formatDouble(result.decode.peak, " tok/s"))
+                RowContent(formatDouble(result.decode?.average, " tok/s")),
+                RowContent(formatDouble(result.decode?.std, " tok/s")),
+                RowContent(formatDouble(result.decode?.peak, " tok/s"))
             )
         )
 
         TableRow(
             content = listOf(
                 RowContent("RAM", bold = true),
-                RowContent(formatInt(result.ram.average, "MB")),
-                RowContent(formatInt(result.ram.std, "MB")),
-                RowContent(formatInt(result.ram.peak, "MB"))
+                RowContent(formatInt(result.ram?.average, "MB")),
+                RowContent(formatInt(result.ram?.std, "MB")),
+                RowContent(formatInt(result.ram?.peak, "MB"))
             )
         )
 

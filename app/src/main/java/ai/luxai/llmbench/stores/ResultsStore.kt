@@ -20,6 +20,12 @@ suspend fun saveResult(context: Context, result: BenchmarkResult) {
     }
 }
 
+suspend fun clearResults(context: Context) {
+    context.dataStore.edit { preferences ->
+        preferences.clear()
+    }
+}
+
 fun getResult(context: Context, llmModelName: String): Flow<Unit> {
     val key = getResultKey(llmModelName)
     return context.dataStore.data.map { preferences ->

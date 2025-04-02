@@ -5,6 +5,7 @@ import ai.luxai.llmbench.components.AppTopBar
 import ai.luxai.llmbench.screens.benchmark.hooks.useBenchmarking
 import ai.luxai.llmbench.state.LLMViewModel
 import ai.luxai.llmbench.state.ResultViewModel
+import ai.luxai.llmbench.stores.clearResults
 import ai.luxai.llmbench.stores.saveResult
 import ai.luxai.llmbench.views.MessagesView
 import androidx.activity.compose.BackHandler
@@ -62,12 +63,13 @@ fun BenchmarkScreen(
 
     LaunchedEffect(benchmarkModel) {
         if(benchmarkModel == null){
+            //clears previous results
+            clearResults(context)
             //saves benchmarking results
             results.map { result -> saveResult(context, result) }
             //navigates to result screen
             navController.navigate("results")
         }
-
     }
 
     Scaffold(topBar = {
