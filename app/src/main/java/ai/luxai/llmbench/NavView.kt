@@ -13,7 +13,9 @@ import ai.luxai.llmbench.screens.savedResults.SavedResultsScreen
 import ai.luxai.llmbench.state.LLMViewModel
 import ai.luxai.llmbench.state.ResultViewModel
 import ai.luxai.llmbench.state.loadModelsDownloadState
-import ai.luxai.llmbench.utils.getPhoneData
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
@@ -25,9 +27,7 @@ import androidx.navigation.compose.rememberNavController
 @ExperimentalMaterial3Api
 @Composable
 fun NavView() {
-
     val context = LocalContext.current
-
     val navController = rememberNavController()
     val viewModel: LLMViewModel = viewModel(
         factory = LLMViewModel.Factory(loadModelsDownloadState(context))
@@ -35,76 +35,64 @@ fun NavView() {
     val resultViewModel = ResultViewModel(viewModel)
 
     NavHost(navController = navController, startDestination = "home") {
+        composable(
+            "home",
+            enterTransition = { fadeIn(tween(0)) }, // Instant fade
+            exitTransition = { fadeOut(tween(0)) }  // Instant fade
+        ) { HomeScreen(navController) }
 
-        composable("home") {
-            HomeScreen(
-                navController
-            )
-        }
+        composable(
+            "about",
+            enterTransition = { fadeIn(tween(0)) },
+            exitTransition = { fadeOut(tween(0)) }
+        ) { AboutScreen(navController) }
 
-        composable("about") {
-            AboutScreen(
-                navController
-            )
-        }
+        composable(
+            "licenses",
+            enterTransition = { fadeIn(tween(0)) },
+            exitTransition = { fadeOut(tween(0)) }
+        ) { LicensesScreen(navController) }
 
-        composable("licenses") {
-            LicensesScreen(
-                navController
-            )
-        }
+        composable(
+            "pick-chat",
+            enterTransition = { fadeIn(tween(0)) },
+            exitTransition = { fadeOut(tween(0)) }
+        ) { PickChatScreen(navController, viewModel, resultViewModel) }
 
-        composable("pick-chat") {
-            PickChatScreen(
-                navController,
-                viewModel,
-                resultViewModel
-            )
-        }
+        composable(
+            "chat",
+            enterTransition = { fadeIn(tween(0)) },
+            exitTransition = { fadeOut(tween(0)) }
+        ) { ChatScreen(navController, viewModel, resultViewModel) }
 
-        composable("chat") {
-            ChatScreen(
-                navController,
-                viewModel,
-                resultViewModel
-            )
-        }
+        composable(
+            "pick-benchmarks",
+            enterTransition = { fadeIn(tween(0)) },
+            exitTransition = { fadeOut(tween(0)) }
+        ) { ModelSelectionScreen(navController, viewModel, resultViewModel) }
 
-        composable("pick-benchmarks") {
-            ModelSelectionScreen(
-                navController,
-                viewModel,
-                resultViewModel
-            )
-        }
+        composable(
+            "benchmark",
+            enterTransition = { fadeIn(tween(0)) },
+            exitTransition = { fadeOut(tween(0)) }
+        ) { BenchmarkScreen(navController, viewModel, resultViewModel) }
 
-        composable("benchmark") {
-            BenchmarkScreen(
-                navController,
-                viewModel,
-                resultViewModel
-            )
-        }
+        composable(
+            "results",
+            enterTransition = { fadeIn(tween(0)) },
+            exitTransition = { fadeOut(tween(0)) }
+        ) { ResultsScreen(navController, resultViewModel) }
 
-        composable("results") {
-            ResultsScreen(
-                navController,
-                resultViewModel
-            )
-        }
+        composable(
+            "saved-results",
+            enterTransition = { fadeIn(tween(0)) },
+            exitTransition = { fadeOut(tween(0)) }
+        ) { SavedResultsScreen(navController) }
 
-        composable("saved-results") {
-            SavedResultsScreen(
-                navController
-            )
-        }
-
-        composable("chat-results") {
-            ChatResultScreen(
-                navController,
-                resultViewModel
-            )
-        }
-
+        composable(
+            "chat-results",
+            enterTransition = { fadeIn(tween(0)) },
+            exitTransition = { fadeOut(tween(0)) }
+        ) { ChatResultScreen(navController, resultViewModel) }
     }
 }
