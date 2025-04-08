@@ -1,6 +1,7 @@
 package ai.luxai.llmbench.screens.results
 
-import ai.luxai.llmbench.api.encryptAndPostResult
+import ai.luxai.llmbench.api.usePostRequest
+import ai.luxai.llmbench.state.BenchmarkResult
 import ai.luxai.llmbench.state.ResultViewModel
 import ai.luxai.llmbench.utils.getPhoneData
 import ai.luxai.llmbench.views.ResultView
@@ -23,12 +24,18 @@ fun ResultsScreen(
 
     val results by resultViewModel.results.collectAsState()
 
+    val (_, sendResults) = usePostRequest<BenchmarkResult>(
+        endpoint = "llmInference",
+        onSuccess = {},
+        onError = {}
+    )
+
     LaunchedEffect(Unit) {
         val phone = getPhoneData(context)
         results.map {
             it.phone = phone
             it.gpu = null
-            encryptAndPostResult(it)
+            sendResults(it)
         }
     }
 

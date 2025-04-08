@@ -40,6 +40,11 @@ data class Message(
     val prefillTime: Long? = null,
 )
 
+data class Report(
+    val model: String,
+    val messages: List<Message>
+)
+
 enum class ModelState {
     NOT_LOADED,
     LOADING,
@@ -65,6 +70,9 @@ class LLMViewModel(
 
     private val _messages = MutableStateFlow(emptyList<Message>())
     val messages = _messages.asStateFlow()
+
+    private val _report = MutableStateFlow<Report?>(null)
+    val report = _report.asStateFlow()
 
     private val smolLM = SmolLM()
 
@@ -248,4 +256,17 @@ class LLMViewModel(
         onFinishPausing = { unload() }
         stopGeneration {onStop()}
     }
+
+    fun setConversationAsReported() {
+        val modelName = _model.value?.modelName
+
+        if(modelName === null)
+            throw Exception("No model in the state to report")
+
+        _report.value = Report(
+            model = modelName,
+            messages = _messages.value
+        )
+    }
+
 }

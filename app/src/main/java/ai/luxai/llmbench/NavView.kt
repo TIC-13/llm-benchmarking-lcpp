@@ -8,6 +8,7 @@ import ai.luxai.llmbench.screens.home.HomeScreen
 import ai.luxai.llmbench.screens.licenses.LicensesScreen
 import ai.luxai.llmbench.screens.modelSelection.ModelSelectionScreen
 import ai.luxai.llmbench.screens.pickChat.PickChatScreen
+import ai.luxai.llmbench.screens.report.ReportScreen
 import ai.luxai.llmbench.screens.results.ResultsScreen
 import ai.luxai.llmbench.screens.savedResults.SavedResultsScreen
 import ai.luxai.llmbench.state.LLMViewModel
@@ -94,5 +95,11 @@ fun NavView() {
             enterTransition = { fadeIn(tween(0)) },
             exitTransition = { fadeOut(tween(0)) }
         ) { ChatResultScreen(navController, resultViewModel) }
+
+        composable(
+            "report",
+            enterTransition = { fadeIn(tween(0)) },
+            exitTransition = { fadeOut(tween(0)) }
+        ) { ReportScreen(viewModel, navController) }
     }
 }

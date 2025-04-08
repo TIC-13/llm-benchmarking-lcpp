@@ -2,13 +2,13 @@ package ai.luxai.llmbench.screens.benchmark
 
 import ai.luxai.llmbench.components.AppBackground
 import ai.luxai.llmbench.components.AppTopBar
+import ai.luxai.llmbench.hooks.useStartReport
 import ai.luxai.llmbench.screens.benchmark.hooks.useBenchmarking
 import ai.luxai.llmbench.state.LLMViewModel
 import ai.luxai.llmbench.state.ResultViewModel
 import ai.luxai.llmbench.stores.clearResults
 import ai.luxai.llmbench.stores.saveResult
 import ai.luxai.llmbench.views.MessagesView
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,6 +16,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Flag
+import androidx.compose.material.icons.filled.Replay
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -23,9 +28,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,10 +36,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.launch
 
 @Composable
 fun BenchmarkScreen(
@@ -59,6 +60,8 @@ fun BenchmarkScreen(
 
     val results by resultViewModel.results.collectAsState()
 
+    val startReport = useStartReport(viewModel, navController)
+
     useBenchmarking(model = benchmarkModel, viewModel = viewModel)
 
     LaunchedEffect(benchmarkModel) {
@@ -75,6 +78,17 @@ fun BenchmarkScreen(
     Scaffold(topBar = {
         AppTopBar(
             title = benchmarkModel?.modelName ?: "Benchmark",
+            actions = {
+                IconButton(
+                    onClick = { startReport() }
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Flag,
+                        contentDescription = "report chat",
+                        tint = MaterialTheme.colorScheme.onPrimary
+                    )
+                }
+            },
             onBack = { navController.popBackStack() }
         )
     }) { paddingValues ->
@@ -93,7 +107,7 @@ fun BenchmarkScreen(
                         .fillMaxSize()
                         .padding(horizontal = 10.dp),
                     messages = messages,
-                    isThinking = isThinking
+                    isThinking = isThinking,
                 )
             }
         }
@@ -116,7 +130,18 @@ fun BenchmarkView(
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically,
     ){
-        //Text(text = "GPU: ${if(gpu !== null) "${gpu}%" else "-"}", color = textColor, fontWeight = fontWeight, style = style)
-        Text(text = "RAM: ${if(ram !== null) "${ram.toInt()}MB" else "-"}", color = textColor, fontWeight = fontWeight, style = style)
+        BenchmarkText(
+            ram, textColor, fontWeight, style
+        )
     }
+}
+
+@Composable
+fun BenchmarkText(
+    ram: Double?,
+    textColor: Color = MaterialTheme.colorScheme.onPrimary,
+    fontWeight: FontWeight = FontWeight.Light,
+    style: TextStyle = MaterialTheme.typography.bodyMedium,
+) {
+    Text(text = "RAM: ${if(ram !== null) "${ram.toInt()}MB" else "-"}", color = textColor, fontWeight = fontWeight, style = style)
 }

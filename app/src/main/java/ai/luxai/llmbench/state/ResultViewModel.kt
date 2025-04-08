@@ -1,12 +1,10 @@
 package ai.luxai.llmbench.state
 
-import ai.luxai.llmbench.api.encryptAndPostResult
 import ai.luxai.llmbench.utils.Measurement
 import ai.luxai.llmbench.utils.Phone
 import ai.luxai.llmbench.utils.Sampler
 import ai.luxai.llmbench.utils.benchmark.gpuUsage
 import ai.luxai.llmbench.utils.benchmark.ramUsage
-import ai.luxai.llmbench.utils.getPhoneData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
