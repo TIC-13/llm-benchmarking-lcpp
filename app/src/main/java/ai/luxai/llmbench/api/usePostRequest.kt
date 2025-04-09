@@ -30,7 +30,7 @@ interface ApiService {
     suspend fun postReport(@Body encryptedData: Map<String, String>): Response<Any>
 }
 
-const val apiAddress = BuildConfig.API_ADRESS
+val apiAddress: String = BuildConfig.API_ADDRESS ?: ""
 
 val retrofit: Retrofit? =
     if (apiAddress.startsWith("http"))

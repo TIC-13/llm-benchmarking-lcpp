@@ -113,15 +113,17 @@ fun ChatScreen(
                 navController.popBackStack()
             },
             actions = {
-                IconButton(
-                    enabled = !noMessageFromApp,
-                    onClick = { startReport() }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.OutlinedFlag,
-                        contentDescription = "report chat",
-                        tint = if(noMessageFromApp) Color.Gray else MaterialTheme.colorScheme.onPrimary
-                    )
+                if(viewModel.apiAddressDefined) {
+                    IconButton(
+                        enabled = !noMessageFromApp,
+                        onClick = { startReport() }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.OutlinedFlag,
+                            contentDescription = "report chat",
+                            tint = if(noMessageFromApp) Color.Gray else MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
                 }
             }
         )

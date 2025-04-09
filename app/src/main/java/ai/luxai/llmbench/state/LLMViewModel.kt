@@ -1,7 +1,9 @@
 package ai.luxai.llmbench.state
 
+import ai.luxai.llmbench.BuildConfig
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import io.shubham0204.smollm.SmolLM
@@ -88,6 +90,8 @@ class LLMViewModel(
     private var responseGenerationJob: Job? = null
 
     var onFinishPausing: (() -> Unit)? = null
+
+    val apiAddressDefined = BuildConfig.API_ADDRESS !== null
 
     suspend fun setModel(
         md: ModelDownloadState,

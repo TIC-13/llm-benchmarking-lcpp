@@ -83,15 +83,17 @@ fun BenchmarkScreen(
         AppTopBar(
             title = benchmarkModel?.modelName ?: "Benchmark",
             actions = {
-                IconButton(
-                    onClick = { startReport() },
-                    enabled = !noMessageFromApp
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.OutlinedFlag,
-                        contentDescription = "report chat",
-                        tint = if(noMessageFromApp) Color.Gray else MaterialTheme.colorScheme.onPrimary
-                    )
+                if(viewModel.apiAddressDefined) {
+                    IconButton(
+                        onClick = { startReport() },
+                        enabled = !noMessageFromApp
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.OutlinedFlag,
+                            contentDescription = "report chat",
+                            tint = if(noMessageFromApp) Color.Gray else MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
                 }
             },
             onBack = { navController.popBackStack() }

@@ -12,9 +12,9 @@ if (localPropertiesFile.exists()) {
     localProperties.load(localPropertiesFile.inputStream())
 }
 
-val rankingAddress: String = localProperties.getProperty("RANKING_ADDRESS")
-val apiAddress: String = localProperties.getProperty("API_ADDRESS")
-val apiKey: String = localProperties.getProperty("API_KEY")
+val rankingAddress: String? = localProperties.getProperty("RANKING_ADDRESS")
+val apiAddress: String? = localProperties.getProperty("API_ADDRESS")
+val apiKey: String? = localProperties.getProperty("API_KEY")
 
 android {
     namespace = "ai.luxai.llmbench"
@@ -29,9 +29,9 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "RANKING_ADDRESS", "\"$rankingAddress\"")
-        buildConfigField("String", "API_ADRESS", "\"${apiAddress}\"")
-        buildConfigField("String", "API_KEY", "\"${apiKey}\"")
+        buildConfigField("String", "RANKING_ADDRESS", rankingAddress?.let { "\"$it\"" } ?: "null")
+        buildConfigField("String", "API_ADDRESS", apiAddress?.let { "\"$it\"" } ?: "null")
+        buildConfigField("String", "API_KEY", apiKey?.let { "\"$it\"" } ?: "null")
     }
 
     buildTypes {

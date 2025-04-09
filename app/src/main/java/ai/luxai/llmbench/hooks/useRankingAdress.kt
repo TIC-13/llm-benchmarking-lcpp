@@ -11,15 +11,15 @@ data class RankingAddress(
 
 @Composable
 fun useRankingAddress(): RankingAddress {
-    val rankingAddress = remember {
+    val rankingAddress: String? = remember {
         BuildConfig.RANKING_ADDRESS
     }
     val rankingIsValid = remember {
-        rankingAddress.startsWith("http")
+        rankingAddress !== null && rankingAddress.startsWith("http")
     }
 
     return RankingAddress(
-        address = rankingAddress,
+        address = rankingAddress ?: "",
         isValid = rankingIsValid
     )
 }
