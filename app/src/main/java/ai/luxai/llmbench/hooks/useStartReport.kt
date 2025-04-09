@@ -21,7 +21,7 @@ fun useStartReport(
         modal.show(
             ModalProps(
                 title = "Report conversation",
-                text = "Do you wish to report this conversation?",
+                text = "Do you wish to close the chat and report this conversation?",
                 confirmProps = ModalButtonProps(label = "Report", action = ::goToReport)
             )
         )

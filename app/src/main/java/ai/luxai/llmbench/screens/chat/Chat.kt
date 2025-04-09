@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.Flag
+import androidx.compose.material.icons.filled.OutlinedFlag
 import androidx.compose.material.icons.filled.Replay
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -113,7 +114,7 @@ fun ChatScreen(
                     onClick = { startReport() }
                 ) {
                     Icon(
-                        imageVector = Icons.Filled.Flag,
+                        imageVector = Icons.Default.OutlinedFlag,
                         contentDescription = "report chat",
                         tint = MaterialTheme.colorScheme.onPrimary
                     )
