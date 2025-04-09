@@ -67,7 +67,7 @@ fun BenchmarkScreen(
     LaunchedEffect(benchmarkModel) {
         if(benchmarkModel == null){
             //clears previous results
-            clearResults(context)
+            //clearResults(context)
             //saves benchmarking results
             results.map { result -> saveResult(context, result) }
             //navigates to result screen
