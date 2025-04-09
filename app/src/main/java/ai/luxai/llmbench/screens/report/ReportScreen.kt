@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.RadioButton
@@ -35,6 +37,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 
 data class ReportBody(
@@ -49,8 +52,11 @@ fun ReportScreen(
     viewModel: LLMViewModel,
     navController: NavController
 ) {
+    // Define the character limit constant
+    val MAX_CHAR_LIMIT = 500
 
     val context = LocalContext.current
+    val scrollState = rememberScrollState()
 
     val report = viewModel.report.collectAsState()
     var selectedOption by remember { mutableStateOf<String?>(null) }
@@ -116,7 +122,8 @@ fun ReportScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(16.dp),
+                        .padding(16.dp)
+                        .verticalScroll(scrollState),
                     verticalArrangement = Arrangement.spacedBy(15.dp)
                 ) {
                     ReportSection{
@@ -144,16 +151,35 @@ fun ReportScreen(
                     }
 
                     ReportSection {
-                        Text(
-                            text = "Additional details:",
-                            color = Color.White,
-                            fontWeight = FontWeight.Medium
-                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Additional details:",
+                                color = Color.White,
+                                fontWeight = FontWeight.Medium
+                            )
+
+                            // Character counter placed next to the label
+                            Text(
+                                text = "${reportText.length}/${MAX_CHAR_LIMIT}",
+                                color = Color.LightGray,
+                                fontSize = 14.sp
+                            )
+                        }
+
                         TextField(
                             modifier = Modifier
                                 .fillMaxWidth(1f),
                             value = reportText,
-                            onValueChange = { reportText = it },
+                            onValueChange = {
+                                // Only update the text if it's within the character limit
+                                if (it.length <= MAX_CHAR_LIMIT) {
+                                    reportText = it
+                                }
+                            },
                             placeholder = { Text("Describe the issue...") },
                             minLines = 3,
                             maxLines = 3,
@@ -169,6 +195,9 @@ fun ReportScreen(
                             Text("Send Report")
                         }
                     }
+
+                    // Add extra padding at the bottom to ensure everything is visible with keyboard
+                    Box(modifier = Modifier.padding(bottom = 100.dp))
                 }
 
                 if (isLoading) {
