@@ -13,6 +13,7 @@ import ai.luxai.llmbench.screens.chat.components.ChatTextBox
 import ai.luxai.llmbench.state.LLMViewModel
 import ai.luxai.llmbench.state.ModelState
 import ai.luxai.llmbench.state.ResultViewModel
+import ai.luxai.llmbench.state.Role
 import ai.luxai.llmbench.views.MessagesView
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
@@ -65,6 +66,8 @@ fun ChatScreen(
     val gpu by resultViewModel.gpuDisplayValue.collectAsState()
     val ram by resultViewModel.ramDisplayValue.collectAsState()
 
+    val noMessageFromApp = messages.none { it.role === Role.APP }
+
     val counter = useCounter(limit = 3)
 
     val modal = useModal()
@@ -111,12 +114,13 @@ fun ChatScreen(
             },
             actions = {
                 IconButton(
+                    enabled = !noMessageFromApp,
                     onClick = { startReport() }
                 ) {
                     Icon(
                         imageVector = Icons.Default.OutlinedFlag,
                         contentDescription = "report chat",
-                        tint = MaterialTheme.colorScheme.onPrimary
+                        tint = if(noMessageFromApp) Color.Gray else MaterialTheme.colorScheme.onPrimary
                     )
                 }
             }
@@ -167,12 +171,13 @@ fun ChatScreen(
                                     action = { navController.navigate("chat-results") }
                                 )
                             ))
-                        }
-                    ) {
+                        },
+                        enabled = !noMessageFromApp
+                        ) {
                         Icon(
                             imageVector = Icons.Filled.BarChart,
                             contentDescription = "go to results",
-                            tint = MaterialTheme.colorScheme.onPrimary
+                            tint = if(noMessageFromApp) Color.Gray else MaterialTheme.colorScheme.onPrimary
                         )
                     }
                 }

@@ -6,6 +6,7 @@ import ai.luxai.llmbench.hooks.useStartReport
 import ai.luxai.llmbench.screens.benchmark.hooks.useBenchmarking
 import ai.luxai.llmbench.state.LLMViewModel
 import ai.luxai.llmbench.state.ResultViewModel
+import ai.luxai.llmbench.state.Role
 import ai.luxai.llmbench.stores.clearResults
 import ai.luxai.llmbench.stores.saveResult
 import ai.luxai.llmbench.views.MessagesView
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Flag
+import androidx.compose.material.icons.filled.OutlinedFlag
 import androidx.compose.material.icons.filled.Replay
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -62,6 +64,8 @@ fun BenchmarkScreen(
 
     val startReport = useStartReport(viewModel, navController)
 
+    val noMessageFromApp = messages.none { it.role === Role.APP }
+
     useBenchmarking(model = benchmarkModel, viewModel = viewModel)
 
     LaunchedEffect(benchmarkModel) {
@@ -80,12 +84,13 @@ fun BenchmarkScreen(
             title = benchmarkModel?.modelName ?: "Benchmark",
             actions = {
                 IconButton(
-                    onClick = { startReport() }
+                    onClick = { startReport() },
+                    enabled = !noMessageFromApp
                 ) {
                     Icon(
-                        imageVector = Icons.Filled.Flag,
+                        imageVector = Icons.Filled.OutlinedFlag,
                         contentDescription = "report chat",
-                        tint = MaterialTheme.colorScheme.onPrimary
+                        tint = if(noMessageFromApp) Color.Gray else MaterialTheme.colorScheme.onPrimary
                     )
                 }
             },
